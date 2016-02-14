@@ -1,0 +1,36 @@
+#ifndef GLOBAL
+#define GLOBAL
+
+#include <QString>
+#include <QList>
+
+const int headerMsgSize = 16;
+
+typedef struct answers {
+    QString correctAnswer;
+    QString uncorrectAnswers;
+} Answers;
+
+typedef struct  test{
+    QString question;
+    QString trueAnswer;
+    QString falseAnswer;
+} TestStructure ;
+
+typedef struct answersinfo {
+    QString statement;
+    bool isCorrectAnswer;
+    int assurance;
+} AnswersVector;
+
+typedef struct student {
+    QString firstName;
+    QString secondName;
+    QString surname;
+    QString group;
+    int score;
+    QList<AnswersVector> answerInfo;
+} StudentResult;
+
+#endif // GLOBAL
+
