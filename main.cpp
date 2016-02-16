@@ -1,5 +1,4 @@
 #include "mainwindow.h"
-#include "serverview.h"
 
 #include <QApplication>
 
@@ -11,7 +10,7 @@ int main(int argc, char *argv[])
 
     mainWnd.setWindowTitle("Eco Test Creator");
 
-    mainWnd.show();
+    mainWnd.showStartView();
 
     return a.exec();
 }

@@ -3,32 +3,37 @@
 
 #include "global.h"
 
-#include <QObject>
+#include <QTcpServer>
 #include <QMap>
 
-class QTcpServer;
 class QTcpSocket;
 class QStringList;
+class ClientInfoSaver;
 
-class TcpServer : public QObject
+class TcpServer : public QTcpServer
 {
     Q_OBJECT
 public:
     explicit TcpServer(QObject *parent = 0);
 
+    void setPort(int portvalue);
+    QString serverIp() const;
+    int serverPort() const;
+
 public slots:
     void startServer();
     void stopServer();
-    void newUser();
-    void readClientSlot();
+
+signals:
     void closeClientConnection();
 
-private:
-    StudentResult fillResultStructure(const QStringList &dataList) const;
+protected:
+    void incomingConnection(qintptr socketDescriptor);
 
-    QTcpServer            *m_tcpServer;
-    int                    m_serverStatus;
-    QMap<int,QTcpSocket *> m_clients;
+private:
+    QMap<int, ClientInfoSaver*> m_clients;
+    int                         m_listeningPort;
+    QString                     m_listeningIp;
 };
 
 #endif // TCPSERVER_H

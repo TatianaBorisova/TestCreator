@@ -13,18 +13,22 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-    mainwindow.cpp \
     docfileprocessing.cpp \
     stringencryption.cpp \
-    serverview.cpp \
     tcpserver.cpp \
-    sqldatabase.cpp
+    sqldatabase.cpp \
+    clientinfosaver.cpp \
+    serversettingsview.cpp \
+    testcreatorview.cpp \
+    mainwindow.cpp
 
 HEADERS  += \
-    mainwindow.h \
     docfileprocessing.h \
     stringencryption.h \
     global.h \
-    serverview.h \
     tcpserver.h \
-    sqldatabase.h
+    sqldatabase.h \
+    clientinfosaver.h \
+    serversettingsview.h \
+    testcreatorview.h \
+    mainwindow.h

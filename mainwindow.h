@@ -3,48 +3,31 @@
 
 #include <QWidget>
 
-class QVBoxLayout;
-class QHBoxLayout;
-class QListWidget;
 class QPushButton;
-class QComboBox;
-class QLabel;
-class QStringList;
-class DocFileProcessing;
-class ServerView;
+class QVBoxLayout;
+class TestCreatorView;
+class ServerSettingsView;
 
-class MainWindow: public QWidget
+class MainWindow : public QWidget
 {
     Q_OBJECT
 public:
-    MainWindow(QWidget *parent = 0);
+    explicit MainWindow(QWidget *parent = 0);
 
-signals:
-    void addDocument(const QString &fileName);
-    void removeDocument();
-
-private slots:
-    void openFileDialog();
-    void addDocumentInListWidget(const QString &fileName);
-    void addTestToGeneratedListWidget(const QString &fileName);
-    void generateFromDocFile();
-    void removeDocumentFromListWidget();
-    bool findDumlicateFile(QListWidget *itemBox, const QString &fileName);
+public slots:
+    void showSettingsView();
+    void showTestCreatorView();
+    void showStartView();
 
 private:
-    QLabel      *m_listWidgetName;
-    QLabel      *m_testTypeName;
-    QVBoxLayout *m_leftBox;
-    QVBoxLayout *m_rightBox;
-    QHBoxLayout *m_centerBox;
-    QListWidget *m_wordDocPreviewBox;
-    QListWidget *m_generatedTestBox;
-    QPushButton *m_addDocument;
-    QPushButton *m_removeDocument;
-    QPushButton *m_generateTest;
+    void hidePreviuosWindows();
+    QRect getScreenGeometry() const;
 
-    /////////////////////
-    ServerView *m_serverView;
+    QVBoxLayout        *m_vbox;
+    QPushButton        *m_settingsBtn;
+    QPushButton        *m_testCreatorBtn;
+    TestCreatorView    *m_testCreatorView;
+    ServerSettingsView *m_serverSettingsView;
 };
 
-#endif // MAILWINDOW_H
+#endif // MAINWINDOW_H
