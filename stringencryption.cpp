@@ -10,7 +10,10 @@ QString StringEncryption::stringEncrypt(const QString &strInput,
                                         const QString &strPassword)
 {
     int i,j;
-    QString strOutput="";
+    QString strOutput = "";
+
+    if (strInput.isEmpty())
+        return strOutput;
 
     // Перевод строк в битовые массивы с использованием локальных таблиц
     QByteArray baInput    = strInput.toLocal8Bit();

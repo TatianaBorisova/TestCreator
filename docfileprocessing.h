@@ -26,12 +26,14 @@ private:
     QString clearAnswerString(const QString &str);
     QString clearStatementString(const QString &str);
     void fillTestQuestionInfo(QString str);
+    void setSavingFileName(const QString &file);
 
-    QStringList m_testList;
-    QStringList m_statementList;
+    QStringList     m_testList;
+    QStringList     m_statementList;
     QList <Answers> m_answerList;
-    QString     m_docTextString;
-    QAxWidget  *m_wordApp;
+    QString         m_docTextString;
+    QAxWidget      *m_wordApp;
+    QString         m_testFileName;
 };
 
 #endif // DOCFILEPROCESSING_H

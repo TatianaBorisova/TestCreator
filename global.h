@@ -9,6 +9,7 @@ const int headerMsgSize = 16;
 typedef struct answers {
     QString correctAnswer;
     QString uncorrectAnswers;
+    QString imgPath;
 } Answers;
 
 typedef struct  test{

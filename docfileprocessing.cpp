@@ -12,8 +12,9 @@
 namespace {
 const QString correctAnswer = QString("верный ответ:");
 const QString incorrectAnswer = QString("неверные ответы:");
+const QString picturePath = QString("картинка:");
 const QString statement = QString("утверждение");
-QString jsonString = QString("\t\t{\n\t\t\t\"TestQuestion\": \"%1\",\n\t\t\t\"CorrectTestAnswer\": \"%2\",\n\t\t\t\"TestAnswers\": \"%3\"\n\t\t}");
+QString jsonString = QString("\t\t{\n\t\t\t\"TestQuestion\": \"%1\",\n\t\t\t\"CorrectTestAnswer\": \"%2\",\n\t\t\t\"TestAnswers\": \"%3\",\n\t\t\t\"ImgPath\": \"%4\"\n\t\t}");
 const QString startFileBrace = QString("{\n");
 const QString openBrace = QString("\t\t{\n");
 const QString closeBrace = QString("\n\t]\n}\n");
@@ -34,6 +35,7 @@ void DocFileProcessing::readFromDocSet(const QString &filename, QWidget *parent)
         if (m_wordApp)
             delete m_wordApp;
 
+        setSavingFileName(filename);
         m_docTextString.clear();
         m_testList.clear();
 
@@ -59,18 +61,11 @@ void DocFileProcessing::readFromDocSet(const QString &filename, QWidget *parent)
     }
 }
 
-void DocFileProcessing::printReadData()
-{
-    for (int i = 0; i < m_statementList.count(); i++) {
-        qDebug() << "readFromDocSet statement: " << m_statementList.at(i);
-        qDebug() << "readFromDocSet answers: " << m_answerList.at(i).correctAnswer << m_answerList.at(i).uncorrectAnswers;
-    }
-}
-
 void DocFileProcessing::readFromDocFile(const QString &filename, QWidget *parent)
 {
     if (!filename.isEmpty()) {
 
+        setSavingFileName(filename);
         clearData();
 
         m_wordApp = new QAxWidget("Word.Application", parent);
@@ -92,11 +87,6 @@ void DocFileProcessing::readFromDocFile(const QString &filename, QWidget *parent
         for (int i = 0; i < m_testList.count(); i++) {
             fillTestQuestionInfo(m_testList.at(i));
         }
-
-        //            //show doc content
-        //            m_wordApp->setControl(item->text());
-        //            m_wordApp->show();
-        //            qDebug() << "generateFromDocFile" << item->text();
     }
 }
 
@@ -104,8 +94,12 @@ QString DocFileProcessing::generateTestFile() const
 {
     qDebug() << "generateTestFile";
 
-    QFile file("test.json");
+    //    QDir dir = QDir::current();
+    //    dir.mkdir(m_testFileName);
+    //    dir.cd(m_testFileName);
 
+    //TBD dont forget about linux path
+    QFile file(m_testFileName + ".json");
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
         return "";
     }
@@ -119,11 +113,13 @@ QString DocFileProcessing::generateTestFile() const
         if (i == m_statementList.count() - 1)
             out << jsonString.arg(StringEncryption::stringEncrypt(m_statementList.at(i), "test"))
                    .arg(StringEncryption::stringEncrypt(m_answerList.at(i).correctAnswer, "test"))
-                   .arg(StringEncryption::stringEncrypt(m_answerList.at(i).uncorrectAnswers, "test"));
+                   .arg(StringEncryption::stringEncrypt(m_answerList.at(i).uncorrectAnswers, "test"))
+                   .arg(StringEncryption::stringEncrypt(m_answerList.at(i).imgPath, "test"));
         else
             out << jsonString.arg(StringEncryption::stringEncrypt(m_statementList.at(i), "test"))
                    .arg(StringEncryption::stringEncrypt(m_answerList.at(i).correctAnswer, "test"))
-                   .arg(StringEncryption::stringEncrypt(m_answerList.at(i).uncorrectAnswers, "test")) << comma;
+                   .arg(StringEncryption::stringEncrypt(m_answerList.at(i).uncorrectAnswers, "test"))
+                   .arg(StringEncryption::stringEncrypt(m_answerList.at(i).imgPath, "test")) << comma;
     }
 
     out << closeBrace;
@@ -136,6 +132,7 @@ void DocFileProcessing::fillTestQuestionInfo(QString str)
 {
     int correctAnswerIndx = str.indexOf(correctAnswer);
     int incorrectAnswerIndx = str.indexOf(incorrectAnswer);
+    int imgPathIndx = str.indexOf(picturePath);
 
     if (correctAnswerIndx < 0) {
         QMessageBox::warning(0, "Error", "Ошибка. Не найден верный вариант\nответа в блоке:\n" + str);
@@ -148,7 +145,9 @@ void DocFileProcessing::fillTestQuestionInfo(QString str)
     }
 
     if (correctAnswerIndx > incorrectAnswerIndx) {
-        QMessageBox::warning(0, "Error", "Ошибка. Неверный порядок утверждений в блоке:\n" + str + "\nПравильный вид:\nУтверждение:...\nВерный ответ:...\nНеверные ответы:...\n");
+        QMessageBox::warning(0, "Error", "Ошибка. Неверный порядок утверждений в блоке:\n"
+                             + str
+                             + "\nПравильный вид:\nУтверждение:...\nВерный ответ:...\nНеверные ответы:...\nКартинка:...\n");
         return;
     }
 
@@ -157,16 +156,28 @@ void DocFileProcessing::fillTestQuestionInfo(QString str)
 
     m_statementList.append(statement);
 
-    QString correct, uncorrect;
-    correct = str.mid(correctAnswerIndx + correctAnswer.length(), incorrectAnswerIndx - (correctAnswerIndx + correctAnswer.length()));
-    uncorrect = str.right(str.length() - (incorrectAnswerIndx + incorrectAnswer.length()));
+    QString correct, uncorrect, imgstring;
 
-    correct = clearStatementString(correct);
+    //////////////////first chatacter/////////////////////////////length/////////////////////////////////////////////////////////////
+    correct = str.mid(correctAnswerIndx + correctAnswer.length(), incorrectAnswerIndx - (correctAnswerIndx + correctAnswer.length()));
+
+    //only if image path exists
+    if (imgPathIndx > 0) {
+        uncorrect = str.mid(incorrectAnswerIndx + incorrectAnswer.length(), imgPathIndx - (incorrectAnswerIndx + incorrectAnswer.length()));
+        imgstring = str.right(str.length() - (imgPathIndx + picturePath.length()));
+    } else { //overwise
+        uncorrect = str.right(str.length() - (incorrectAnswerIndx + incorrectAnswer.length()));
+    }
+
+    correct   = clearStatementString(correct);
     uncorrect = clearStatementString(uncorrect);
+    imgstring = clearStatementString(imgstring);
 
     Answers answer;
-    answer.correctAnswer = correct;
+    answer.correctAnswer    = correct;
     answer.uncorrectAnswers = uncorrect;
+    answer.imgPath          = imgstring;
+
     m_answerList.append(answer);
 }
 
@@ -227,11 +238,36 @@ QString DocFileProcessing::clearAnswerString(const QString &str)
 
 QString DocFileProcessing::clearStatementString(const QString &str)
 {
-    QRegExp regExp("[\r\n/]");
+    QRegExp regExp("[\r\n]");
     QString result = str;
 
     result = result.replace(regExp, " "); //change regexp to empty character
     result = result.replace("  ", " "); //change doubles
 
     return result;
+}
+
+void DocFileProcessing::printReadData()
+{
+    for (int i = 0; i < m_statementList.count(); i++) {
+        qDebug() << "readFromDocSet statement: " << m_statementList.at(i);
+        qDebug() << "readFromDocSet answers: " << m_answerList.at(i).correctAnswer << m_answerList.at(i).uncorrectAnswers;
+    }
+}
+
+void DocFileProcessing::setSavingFileName(const QString &file)
+{
+    m_testFileName.clear();
+
+    if (!file.isEmpty()) {
+
+        //TBD: dont forget about linux file path
+        int lastSlashIndx = file.lastIndexOf("/");
+        int lastPointIndx = file.lastIndexOf(".");
+
+        QFile realfile(file);
+        if (realfile.exists()) {
+            m_testFileName = file.mid(lastSlashIndx + 1, lastPointIndx - (lastSlashIndx + 1));
+        }
+    }
 }
