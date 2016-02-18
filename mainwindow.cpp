@@ -18,6 +18,7 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     connect(m_testCreatorBtn, &QPushButton::clicked, this, &MainWindow::showTestCreatorView);
     connect(m_settingsBtn,    &QPushButton::clicked, this, &MainWindow::showSettingsView);
+    connect(m_testCreatorView, &TestCreatorView::backPressed, this, &MainWindow::showStartView);
     connect(m_serverSettingsView, &ServerSettingsView::backToPreviousView, this, &MainWindow::showStartView);
 
     hidePreviuosWindows();
@@ -42,10 +43,13 @@ QRect MainWindow::getScreenGeometry() const
 void MainWindow::showTestCreatorView()
 {
     hidePreviuosWindows();
-    this->move(getScreenGeometry().width()*0.2, getScreenGeometry().height()*0.2);
+    this->move(0, 0);
 
-    m_testCreatorView->showFullScreen();
-    this->showFullScreen();
+    setFixedSize(getScreenGeometry().width()*0.9, getScreenGeometry().height()*0.9);
+    m_testCreatorView->setFixedSize(getScreenGeometry().width()*0.9, getScreenGeometry().height()*0.9);
+    m_testCreatorView->resetElementsSize();
+    m_testCreatorView->show();
+    this->show();
 }
 
 void MainWindow::showStartView()

@@ -94,12 +94,13 @@ QString DocFileProcessing::generateTestFile() const
 {
     qDebug() << "generateTestFile";
 
-    //    QDir dir = QDir::current();
-    //    dir.mkdir(m_testFileName);
+    QDir dir = QDir::current();
+    dir.mkdir(m_testFileName);
     //    dir.cd(m_testFileName);
 
+    QString testSubDir = m_testFileName + "/";
     //TBD dont forget about linux path
-    QFile file(m_testFileName + ".json");
+    QFile file(testSubDir + m_testFileName + ".json");
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
         return "";
     }
@@ -120,6 +121,16 @@ QString DocFileProcessing::generateTestFile() const
                    .arg(StringEncryption::stringEncrypt(m_answerList.at(i).correctAnswer, "test"))
                    .arg(StringEncryption::stringEncrypt(m_answerList.at(i).uncorrectAnswers, "test"))
                    .arg(StringEncryption::stringEncrypt(m_answerList.at(i).imgPath, "test")) << comma;
+
+        //if img exists lets copy it to test directory
+        if (!m_answerList.at(i).imgPath.isEmpty()) {
+
+            QString imgPath = m_answerList.at(i).imgPath;
+            imgPath = imgPath.replace(" ", "");
+
+            if (!QFile::copy(QDir::currentPath() + "/" + imgPath, testSubDir + imgPath))
+                QMessageBox::warning(0, "Error", "Ошибка. Не найден файл:\n" + imgPath);
+        }
     }
 
     out << closeBrace;
@@ -258,7 +269,12 @@ void DocFileProcessing::printReadData()
 void DocFileProcessing::setSavingFileName(const QString &file)
 {
     m_testFileName.clear();
+    m_testFileName = getFileName(file);
+}
 
+QString DocFileProcessing::getFileName(const QString &file, bool withFileExtention) const
+{
+    QString fillName("");
     if (!file.isEmpty()) {
 
         //TBD: dont forget about linux file path
@@ -267,7 +283,12 @@ void DocFileProcessing::setSavingFileName(const QString &file)
 
         QFile realfile(file);
         if (realfile.exists()) {
-            m_testFileName = file.mid(lastSlashIndx + 1, lastPointIndx - (lastSlashIndx + 1));
+            if (!withFileExtention)
+                fillName = file.mid(lastSlashIndx + 1, lastPointIndx - (lastSlashIndx + 1));
+            else
+                fillName = file.right(file.count() - lastSlashIndx);
         }
     }
+
+    return fillName;
 }

@@ -32,3 +32,6 @@ HEADERS  += \
     serversettingsview.h \
     testcreatorview.h \
     mainwindow.h
+
+RESOURCES += \
+    res.qrc

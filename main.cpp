@@ -8,6 +8,11 @@ int main(int argc, char *argv[])
 
     MainWindow mainWnd;
 
+    ///way to set res file in widgets
+    /////////////////////////////////
+    Q_INIT_RESOURCE(res);
+    ////////////////////////////////
+
     mainWnd.setWindowTitle("Eco Test Creator");
 
     mainWnd.showStartView();
