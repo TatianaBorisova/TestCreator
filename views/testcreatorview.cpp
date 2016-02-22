@@ -161,7 +161,7 @@ void TestCreatorView::resetElementsSize() const
     m_addDocument->setText("Добавить тест-документ");
     m_generateTest->setText("Сгенерировать тест из файла");
 
-    m_backBtn->setIcon(QIcon(QPixmap(":/back.png")));
+    m_backBtn->setIcon(QIcon(QPixmap(":res/back.png")));
     m_backBtn->setIconSize(QSize(50, 50));
 
     connect(m_addDocument, SIGNAL(clicked(bool)), this, SLOT(openFileDialog()));

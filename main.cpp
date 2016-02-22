@@ -15,7 +15,7 @@ int main(int argc, char *argv[])
 
     mainWnd.setWindowTitle("Eco Test Creator");
 
-    mainWnd.showStartView();
+    mainWnd.showMainView(StartView);
 
     return a.exec();
 }
