@@ -4,6 +4,7 @@
 #include <QLineEdit>
 #include <QGridLayout>
 #include <QPushButton>
+#include <QIntValidator>
 
 TestEditorSubView::TestEditorSubView(QWidget *parent) :
     TestCreatorBaseView(parent),
@@ -37,6 +38,9 @@ TestEditorSubView::TestEditorSubView(QWidget *parent) :
     m_questionCountBox->setFixedHeight(50);
     m_addQuestions->setFixedHeight(50);
     m_loadFromDoc->setFixedHeight(50);
+
+    m_questionCountBox->setAlignment(Qt::AlignRight);
+    m_questionCountBox->setValidator(new QIntValidator(this));
 
     m_box->setSpacing(20);
 

@@ -34,8 +34,8 @@ void QuestionCreatorTabView::showSubView(SubViews view)
         m_questionEditor->show();
         break;
     case TestEditor:
-        m_testData->show();
     default:
+        m_testData->show();
         break;
     }
 }

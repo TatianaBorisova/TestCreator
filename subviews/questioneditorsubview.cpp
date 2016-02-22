@@ -4,6 +4,7 @@
 #include <QLineEdit>
 #include <QGridLayout>
 #include <QPushButton>
+#include <QIntValidator>
 
 namespace {
 const int margin = 50;
@@ -40,6 +41,9 @@ QuestionEditorSubView::QuestionEditorSubView(QWidget *parent) :
     m_next->setFixedHeight(margin);
     m_loadImg->setFixedHeight(margin);
     m_image->setFixedSize(5*margin, 5*margin);
+
+    m_weightBox->setAlignment(Qt::AlignRight);
+    m_weightBox->setValidator(new QIntValidator(this));
 
     m_box->setContentsMargins(margin, 2*margin, margin, margin);
     m_box->setSpacing(margin);
