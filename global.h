@@ -3,6 +3,7 @@
 
 #include <QString>
 #include <QList>
+#include <QTime>
 
 const int headerMsgSize = 16;
 
@@ -12,7 +13,7 @@ typedef struct answers {
     QString imgPath;
 } Answers;
 
-typedef struct  test{
+typedef struct test{
     QString question;
     QString trueAnswer;
     QString falseAnswer;
@@ -32,6 +33,18 @@ typedef struct student {
     int score;
     QList<AnswersVector> answerInfo;
 } StudentResult;
+
+typedef struct questions {
+    QString question;
+    Answers answers;
+} TestQuestions;
+
+typedef struct testSt {
+    QString testName;
+    QTime testTime;
+    int questionCount;
+    QList<TestQuestions> questions;
+} TestData;
 
 enum TestViews {
     StartView = 0,

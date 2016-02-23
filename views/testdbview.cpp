@@ -9,7 +9,7 @@
 namespace {
 const QLatin1String slash = QLatin1String("/");
 const int btnWidth = 300;
-const int margin = 20;
+const int minHeight = 20;
 }
 
 TestDbView::TestDbView(QWidget *parent) :
@@ -28,7 +28,9 @@ TestDbView::TestDbView(QWidget *parent) :
     QFont wdgFont("Times", 11);
     m_testBox->setFont(wdgFont);
 
-    QFont font("Times", 15);
+    QFont font;
+    font.setPixelSize(15);
+
     m_openTestFile->setFont(font);
     m_createTestFile->setFont(font);
     m_loadTestFile->setFont(font);
@@ -41,18 +43,18 @@ TestDbView::TestDbView(QWidget *parent) :
     m_vbox->addWidget(m_loadTestFile);
     m_vbox->addWidget(m_createTestFile);
 
-    m_box->setSpacing(margin);
+    m_box->setSpacing(minHeight);
     m_box->addWidget(m_testBox, 0, 0);
     m_box->addLayout(m_vbox, 0, 1);
 
-    m_box->setMargin(margin);
+    m_box->setMargin(minHeight);
 
     setLayout(m_box);
 }
 
 void TestDbView::resize()
 {
-    m_testBox->setFixedSize(width() - btnWidth - 3*margin, height()*0.8);
+    m_testBox->setFixedSize(width() - btnWidth - 3*minHeight, height()*0.8);
 }
 
 void TestDbView::setFixedSize(int w, int h)

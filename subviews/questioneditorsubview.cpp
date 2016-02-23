@@ -2,12 +2,13 @@
 
 #include <QLabel>
 #include <QLineEdit>
+#include <QPlainTextEdit>
 #include <QGridLayout>
 #include <QPushButton>
-#include <QIntValidator>
+#include <QRegExpValidator>
 
 namespace {
-const int margin = 50;
+const int minHeight = 50;
 }
 
 QuestionEditorSubView::QuestionEditorSubView(QWidget *parent) :
@@ -16,7 +17,7 @@ QuestionEditorSubView::QuestionEditorSubView(QWidget *parent) :
     m_question(new QLabel("Содержание вопроса:", this)),
     m_weight(new QLabel("Вес вопроса:", this)),
     m_image(new QLabel(this)),
-    m_questionBox(new QLineEdit(this)),
+    m_questionBox(new QPlainTextEdit(this)),
     m_weightBox(new QLineEdit(this)),
     m_back(new QPushButton("Вернуться к параметрам теста", this)),
     m_next(new QPushButton("Заполнить следующий вопрос", this)),
@@ -24,7 +25,8 @@ QuestionEditorSubView::QuestionEditorSubView(QWidget *parent) :
 {
     connect(m_back, &QPushButton::clicked, this, &QuestionEditorSubView::back);
 
-    QFont font("Times", 15);
+    QFont font;
+    font.setPixelSize(15);
     m_question->setFont(font);
     m_weight->setFont(font);
     m_questionBox->setFont(font);
@@ -33,20 +35,23 @@ QuestionEditorSubView::QuestionEditorSubView(QWidget *parent) :
     m_next->setFont(font);
     m_loadImg->setFont(font);
 
-    m_question->setFixedHeight(margin);
-    m_weight->setFixedHeight(margin);
-    m_questionBox->setFixedHeight(3*margin);
-    m_weightBox->setFixedHeight(3*margin);
-    m_back->setFixedHeight(margin);
-    m_next->setFixedHeight(margin);
-    m_loadImg->setFixedHeight(margin);
-    m_image->setFixedSize(5*margin, 5*margin);
+    m_weight->setAlignment(Qt::AlignBottom);
+    m_question->setAlignment(Qt::AlignBottom);
 
-    m_weightBox->setAlignment(Qt::AlignRight);
-    m_weightBox->setValidator(new QIntValidator(this));
+    m_question->setFixedHeight(5*minHeight);
+    m_weight->setFixedHeight(minHeight);
+    m_questionBox->setFixedHeight(3*minHeight);
+    m_weightBox->setFixedHeight(3*minHeight);
+    m_back->setFixedSize(6*minHeight, minHeight);
+    m_next->setFixedHeight(minHeight);
+    m_loadImg->setFixedHeight(minHeight);
+    m_image->setFixedSize(5*minHeight, 5*minHeight);
 
-    m_box->setContentsMargins(margin, 2*margin, margin, margin);
-    m_box->setSpacing(margin);
+    m_image->setStyleSheet("QLabel { background-color : white; border: 2px solid grey }");
+
+    m_weightBox->setValidator(new QRegExpValidator(QRegExp("\\d+"), this));
+    m_box->setContentsMargins(minHeight, minHeight/2, minHeight, minHeight/10);
+    m_box->setSpacing(minHeight);
 
     m_box->addWidget(m_question, 0, 0);
     m_box->addWidget(m_questionBox, 1, 0);
@@ -54,9 +59,15 @@ QuestionEditorSubView::QuestionEditorSubView(QWidget *parent) :
     m_box->addWidget(m_weightBox, 3, 0);
     m_box->addWidget(m_back, 4, 0);
 
+    m_box->addWidget(m_image, 0, 1);
     m_box->addWidget(m_loadImg, 1, 1);
-    m_box->addWidget(m_image, 2, 1);
     m_box->addWidget(m_next, 4, 1);
+
+    m_box->setAlignment(m_back, Qt::AlignRight);
+    m_box->setAlignment(m_image, Qt::AlignTop);
+    m_box->setAlignment(m_loadImg, Qt::AlignBottom);
+    m_box->setAlignment(m_question, Qt::AlignBottom);
+    m_box->setAlignment(m_weight, Qt::AlignBottom);
 
     setLayout(m_box);
 }

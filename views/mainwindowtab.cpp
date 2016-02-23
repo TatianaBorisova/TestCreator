@@ -17,6 +17,7 @@ MainWindowTab::MainWindowTab(QWidget *parent) :
     m_testResultPage(new ResultDbView(this))
 {
     connect(m_createdTestPage, &TestDbView::showView, this, &MainWindowTab::showView);
+    connect(m_settingsPage, &SettingsTabView::testDbChanged, m_creatorPage, &QuestionCreatorTabView::testDbChanged);
 
     m_tab->addTab(m_creatorPage, "Создать тест");
     m_tab->addTab(m_settingsPage, "Настройки");

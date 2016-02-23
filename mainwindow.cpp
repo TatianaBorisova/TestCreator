@@ -1,6 +1,4 @@
 #include "mainwindow.h"
-#include "views/testcreatorview.h"
-#include "views/serversettingsview.h"
 #include "views/mainwindowtab.h"
 
 #include <QVBoxLayout>

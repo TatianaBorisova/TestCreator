@@ -19,8 +19,6 @@ SOURCES += main.cpp\
     sqldatabase.cpp \
     clientinfosaver.cpp \
     mainwindow.cpp \
-    views/serversettingsview.cpp \
-    views/testcreatorview.cpp \
     views/testcreatorbaseview.cpp \
     views/mainwindowtab.cpp \
     views/questioncreatortabview.cpp \
@@ -28,7 +26,8 @@ SOURCES += main.cpp\
     views/testdbview.cpp \
     views/resultdbview.cpp \
     subviews/testeditorsubview.cpp \
-    subviews/questioneditorsubview.cpp
+    subviews/questioneditorsubview.cpp \
+    subviews/settingsubview.cpp
 
 HEADERS  += \
     docfileprocessing.h \
@@ -38,8 +37,6 @@ HEADERS  += \
     sqldatabase.h \
     clientinfosaver.h \
     mainwindow.h \
-    views/serversettingsview.h \
-    views/testcreatorview.h \
     views/testcreatorbaseview.h \
     views/mainwindowtab.h \
     views/questioncreatortabview.h \
@@ -47,7 +44,8 @@ HEADERS  += \
     views/testdbview.h \
     views/resultdbview.h \
     subviews/testeditorsubview.h \
-    subviews/questioneditorsubview.h
+    subviews/questioneditorsubview.h \
+    subviews/settingsubview.h
 
 RESOURCES += \
     res.qrc

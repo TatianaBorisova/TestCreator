@@ -15,12 +15,12 @@ public:
     explicit SqlDBSaver(QObject *parent = 0);
 
 public slots:
-    void createTableInDataBase(const QString &dbName, const QString &tableName);
-    void saveResultToDataBase(const StudentResult &result);
+    void createTestTables(const QString &dbName);
+    void createResultTable(const QString &dbName, const QString &tableName);
+    void saveStudentResultToDb(const QString &dbName, const QString &tableName, const StudentResult &result);
+    void saveTestToDb(const QString &dbName, const TestData &result);
 
 private:
-    static QString m_dbName;
-    static QString m_tableName;
 };
 
 #endif // SQLDATABASE_H

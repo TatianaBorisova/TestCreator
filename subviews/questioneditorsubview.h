@@ -3,6 +3,7 @@
 
 #include "views/testcreatorbaseview.h"
 
+class QPlainTextEdit;
 class QLabel;
 class QLineEdit;
 class QPushButton;
@@ -29,8 +30,8 @@ private:
     QLabel *m_weight;
     QLabel *m_image;
 
-    QLineEdit *m_questionBox;
-    QLineEdit *m_weightBox;
+    QPlainTextEdit *m_questionBox;
+    QLineEdit      *m_weightBox;
 
     QPushButton *m_back;
     QPushButton *m_next;

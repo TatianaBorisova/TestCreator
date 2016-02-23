@@ -4,7 +4,13 @@
 #include <QLineEdit>
 #include <QGridLayout>
 #include <QPushButton>
-#include <QIntValidator>
+#include <QRegExpValidator>
+#include <QTimeEdit>
+#include <QMessageBox>
+
+namespace {
+const int elHeight = 50;
+}
 
 TestEditorSubView::TestEditorSubView(QWidget *parent) :
     TestCreatorBaseView(parent),
@@ -13,14 +19,19 @@ TestEditorSubView::TestEditorSubView(QWidget *parent) :
     m_testTime(new QLabel("Время выполнения теста", this)),
     m_questionCount(new QLabel("Количество вопросов", this)),
     m_testNameBox(new QLineEdit(this)),
-    m_testTimeBox(new QLineEdit(this)),
+    m_testTimeBox(new QTimeEdit(this)),
     m_questionCountBox(new QLineEdit(this)),
     m_addQuestions(new QPushButton("Добавить вопросы", this)),
-    m_loadFromDoc(new QPushButton("Загрузить вопросы из Doc файла", this))
+    m_loadFromDoc(new QPushButton("Загрузить тест из Doc файла", this))
 {
     connect(m_addQuestions, &QPushButton::clicked, this, &TestEditorSubView::addQuestions);
+    connect(m_testNameBox, &QLineEdit::editingFinished, this, &TestEditorSubView::setTestName);
+    connect(m_testTimeBox, &QTimeEdit::editingFinished, this, &TestEditorSubView::setTestTime);
+    connect(m_questionCountBox, &QLineEdit::editingFinished, this, &TestEditorSubView::setQuestionCount);
 
-    QFont font("Times", 15);
+    QFont font;
+    font.setPixelSize(15);
+
     m_testName->setFont(font);
     m_testTime->setFont(font);
     m_questionCount->setFont(font);
@@ -30,17 +41,16 @@ TestEditorSubView::TestEditorSubView(QWidget *parent) :
     m_addQuestions->setFont(font);
     m_loadFromDoc->setFont(font);
 
-    m_testName->setFixedHeight(50);
-    m_testTime->setFixedHeight(50);
-    m_questionCount->setFixedHeight(50);
-    m_testNameBox->setFixedHeight(50);
-    m_testTimeBox->setFixedHeight(50);
-    m_questionCountBox->setFixedHeight(50);
-    m_addQuestions->setFixedHeight(50);
-    m_loadFromDoc->setFixedHeight(50);
+    m_testName->setFixedHeight(elHeight);
+    m_testTime->setFixedHeight(elHeight);
+    m_questionCount->setFixedHeight(elHeight);
+    m_testNameBox->setFixedHeight(elHeight);
+    m_testTimeBox->setFixedHeight(elHeight);
+    m_questionCountBox->setFixedHeight(elHeight);
+    m_addQuestions->setFixedHeight(elHeight);
+    m_loadFromDoc->setFixedHeight(elHeight);
 
-    m_questionCountBox->setAlignment(Qt::AlignRight);
-    m_questionCountBox->setValidator(new QIntValidator(this));
+    m_questionCountBox->setValidator(new QRegExpValidator(QRegExp("\\d+"), this));
 
     m_box->setSpacing(20);
 
@@ -70,5 +80,23 @@ void TestEditorSubView::setFixedSize(int w, int h)
 
 void TestEditorSubView::addQuestions()
 {
-    emit showSubView(QuestionEditor);
+    if (m_questionCountBox->text().toInt() > 0)
+        emit showSubView(QuestionEditor);
+    else
+        QMessageBox::warning(0, "Warning", "Сперва введите количество вопросов.");
+}
+
+void TestEditorSubView::setTestName()
+{
+    emit testNameChanged(m_testNameBox->text());
+}
+
+void TestEditorSubView::setTestTime()
+{
+    emit testTimeChanged(m_testTimeBox->time());
+}
+
+void TestEditorSubView::setQuestionCount()
+{
+    emit questionCountChanged(m_questionCountBox->text().toInt());
 }

@@ -3,6 +3,8 @@
 
 #include "testcreatorbaseview.h"
 
+class SettingSubView;
+
 class SettingsTabView : public TestCreatorBaseView
 {
     Q_OBJECT
@@ -11,8 +13,15 @@ public:
 
     void setFixedSize(int w, int h);
 
+signals:
+    void testDbChanged(const QString &value);
+    void resultDbChanged(const QString &value);
+
 protected:
     virtual void resize();
+
+private:
+    SettingSubView *m_settings;
 };
 
 #endif // SETTINGSTABVIEW_H

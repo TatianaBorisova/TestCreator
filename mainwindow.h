@@ -8,7 +8,7 @@
 class QPushButton;
 class QVBoxLayout;
 class TestCreatorView;
-class ServerSettingsView;
+class SettingSubView;
 
 class MainWindowTab;
 

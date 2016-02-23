@@ -7,6 +7,7 @@ class QLabel;
 class QLineEdit;
 class QPushButton;
 class QGridLayout;
+class QTimeEdit;
 
 class TestEditorSubView : public TestCreatorBaseView
 {
@@ -14,6 +15,15 @@ class TestEditorSubView : public TestCreatorBaseView
 public:
     explicit TestEditorSubView(QWidget *parent = 0);
     void setFixedSize(int w, int h);
+
+    void setTestName();
+    void setTestTime();
+    void setQuestionCount();
+
+signals:
+    void testNameChanged(const QString &name);
+    void testTimeChanged(const QTime &time);
+    void questionCountChanged(int value);
 
 protected:
     virtual void resize();
@@ -27,7 +37,7 @@ private:
     QLabel *m_testTime;
     QLabel *m_questionCount;
     QLineEdit *m_testNameBox;
-    QLineEdit *m_testTimeBox;
+    QTimeEdit *m_testTimeBox;
     QLineEdit *m_questionCountBox;
     QPushButton *m_addQuestions;
     QPushButton *m_loadFromDoc;
