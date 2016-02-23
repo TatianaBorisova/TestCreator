@@ -19,6 +19,7 @@ void testDBSaving()
     for ( int i = 0 ; i < 2; i++ ) {
         TestQuestions testtest;
         testtest.question = QString("Кто тут супер изобретатель тестов?");
+        testtest.weight = 10;
         testtest.answers.correctAnswer = QString("Я");
         testtest.answers.uncorrectAnswers = QString("Не я");
 

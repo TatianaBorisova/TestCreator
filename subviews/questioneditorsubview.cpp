@@ -6,6 +6,7 @@
 #include <QGridLayout>
 #include <QPushButton>
 #include <QRegExpValidator>
+#include <QFileDialog>
 
 namespace {
 const int minHeight = 50;
@@ -24,12 +25,13 @@ QuestionEditorSubView::QuestionEditorSubView(QWidget *parent) :
     m_correctAnswerBox(new QPlainTextEdit(this)),
     m_incorrectAnswerBox(new QPlainTextEdit(this)),
     m_back(new QPushButton("Вернуться к параметрам теста", this)),
-    m_next(new QPushButton("Заполнить следующий вопрос", this)),
+    m_next(new QPushButton("Сохранить и перейти в следующему", this)),
     m_loadImg(new QPushButton("Загрузить изображение", this))
 {
     this->setStyleSheet("QPushButton { min-height: 50px; }");
 
     connect(m_back, &QPushButton::clicked, this, &QuestionEditorSubView::back);
+    connect(m_loadImg, &QPushButton::clicked, this, &QuestionEditorSubView::loadImage);
 
     m_weight->setAlignment(Qt::AlignBottom);
     m_question->setAlignment(Qt::AlignBottom);
@@ -78,5 +80,28 @@ void QuestionEditorSubView::setFixedSize(int w, int h)
 
 void QuestionEditorSubView::back()
 {
-    emit showSubView(TestEditor);
+    if (m_questionCounter == 0)
+        emit showSubView(TestEditor);
+    else
+        m_questionCounter--;
+}
+
+void QuestionEditorSubView::loadImage()
+{
+    QString filePath = QFileDialog::getOpenFileName(this, tr("Choose Test Document"), "", "DOC(*.jpg *.png *.bmp)");
+    m_image->setPixmap(QPixmap(filePath).scaled(m_image->width(), m_image->height()));
+    m_filepath = filePath;
+}
+
+void QuestionEditorSubView::next()
+{
+    TestQuestions test;
+    test.question = m_questionBox->toPlainText();
+    test.weight = m_weightBox->text().toInt();
+    test.answers.correctAnswer = m_correctAnswerBox->toPlainText();
+    test.answers.uncorrectAnswers = m_incorrectAnswerBox->toPlainText();
+    test.answers.imgPath = m_filepath;
+
+    emit createdQuestion(test, m_questionCounter);
+    m_questionCounter++;
 }

@@ -17,11 +17,16 @@ public:
 
     void setFixedSize(int w, int h);
 
+signals:
+    void createdQuestion(const TestQuestions &test, int index);
+
 protected:
     virtual void resize();
 
 private slots:
     void back();
+    void loadImage();
+    void next();
 
 private:
     QGridLayout *m_box;
@@ -41,6 +46,7 @@ private:
     QPushButton *m_next;
     QPushButton *m_loadImg;
 
+    QString m_filepath;
     int m_questionCounter;
 
 };

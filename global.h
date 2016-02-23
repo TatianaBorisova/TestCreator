@@ -36,6 +36,7 @@ typedef struct student {
 
 typedef struct questions {
     QString question;
+    int     weight;
     Answers answers;
 } TestQuestions;
 

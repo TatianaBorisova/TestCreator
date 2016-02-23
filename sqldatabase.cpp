@@ -80,9 +80,10 @@ void SqlDBSaver::saveTestToDb(const QString &dbName, const TestData &result)
 
         for (int i = 0; i < result.questions.count(); i++) {
             QSqlQuery q_ins(dbPtr);
-            q_ins.prepare("INSERT INTO questionsdata (testid, question, correctanswer, uncorrectanswers, imgname, image) VALUES (:testid, :question, :correctanswer, :uncorrectanswers, :imgname, :image)");
+            q_ins.prepare("INSERT INTO questionsdata (testid, question, testweight, correctanswer, uncorrectanswers, imgname, image) VALUES (:testid, :question, :testweight, :correctanswer, :uncorrectanswers, :imgname, :image)");
             q_ins.bindValue(":testid", testId);
             q_ins.bindValue(":question", result.questions.at(i).question);
+            q_ins.bindValue(":testweight", result.questions.at(i).weight);
             q_ins.bindValue(":correctanswer", result.questions.at(i).answers.correctAnswer);
             q_ins.bindValue(":uncorrectanswers", result.questions.at(i).answers.uncorrectAnswers);
 
@@ -130,7 +131,7 @@ void SqlDBSaver::createTestTables(const QString &dbName)
         qDebug() << "create: " << q_testcreate.lastError();
 
 
-        QSqlQuery q_questcreate = dbPtr.exec("CREATE TABLE questionsdata (id integer primary key autoincrement, testid int, question varchar(2048), correctanswer varchar(255), uncorrectanswers varchar(255), imgname varchar(255), image BLOB)");
+        QSqlQuery q_questcreate = dbPtr.exec("CREATE TABLE questionsdata (id integer primary key autoincrement, testid int, question varchar(2048), testweight int, correctanswer varchar(255), uncorrectanswers varchar(255), imgname varchar(255), image BLOB)");
         qDebug() << "create: " << q_questcreate.lastError();
 
         dbPtr.close();
