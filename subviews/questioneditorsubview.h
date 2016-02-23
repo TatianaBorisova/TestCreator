@@ -29,13 +29,19 @@ private:
     QLabel *m_question;
     QLabel *m_weight;
     QLabel *m_image;
+    QLabel *m_correctAnswer;
+    QLabel *m_incorrectAnswer;
 
     QPlainTextEdit *m_questionBox;
     QLineEdit      *m_weightBox;
+    QPlainTextEdit *m_correctAnswerBox;
+    QPlainTextEdit *m_incorrectAnswerBox;
 
     QPushButton *m_back;
     QPushButton *m_next;
     QPushButton *m_loadImg;
+
+    int m_questionCounter;
 
 };
 

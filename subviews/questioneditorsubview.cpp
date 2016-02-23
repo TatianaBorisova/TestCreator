@@ -17,39 +17,28 @@ QuestionEditorSubView::QuestionEditorSubView(QWidget *parent) :
     m_question(new QLabel("Содержание вопроса:", this)),
     m_weight(new QLabel("Вес вопроса:", this)),
     m_image(new QLabel(this)),
+    m_correctAnswer(new QLabel("Верный ответ:", this)),
+    m_incorrectAnswer(new QLabel("Перечислите неверные ответы через ';'", this)),
     m_questionBox(new QPlainTextEdit(this)),
     m_weightBox(new QLineEdit(this)),
+    m_correctAnswerBox(new QPlainTextEdit(this)),
+    m_incorrectAnswerBox(new QPlainTextEdit(this)),
     m_back(new QPushButton("Вернуться к параметрам теста", this)),
     m_next(new QPushButton("Заполнить следующий вопрос", this)),
     m_loadImg(new QPushButton("Загрузить изображение", this))
 {
-    connect(m_back, &QPushButton::clicked, this, &QuestionEditorSubView::back);
+    this->setStyleSheet("QPushButton { min-height: 50px; }");
 
-    QFont font;
-    font.setPixelSize(15);
-    m_question->setFont(font);
-    m_weight->setFont(font);
-    m_questionBox->setFont(font);
-    m_weightBox->setFont(font);
-    m_back->setFont(font);
-    m_next->setFont(font);
-    m_loadImg->setFont(font);
+    connect(m_back, &QPushButton::clicked, this, &QuestionEditorSubView::back);
 
     m_weight->setAlignment(Qt::AlignBottom);
     m_question->setAlignment(Qt::AlignBottom);
 
-    m_question->setFixedHeight(5*minHeight);
-    m_weight->setFixedHeight(minHeight);
-    m_questionBox->setFixedHeight(3*minHeight);
-    m_weightBox->setFixedHeight(3*minHeight);
-    m_back->setFixedSize(6*minHeight, minHeight);
-    m_next->setFixedHeight(minHeight);
-    m_loadImg->setFixedHeight(minHeight);
-    m_image->setFixedSize(5*minHeight, 5*minHeight);
-
     m_image->setStyleSheet("QLabel { background-color : white; border: 2px solid grey }");
 
     m_weightBox->setValidator(new QRegExpValidator(QRegExp("\\d+"), this));
+    m_weightBox->setMaxLength(2);
+
     m_box->setContentsMargins(minHeight, minHeight/2, minHeight, minHeight/10);
     m_box->setSpacing(minHeight);
 
@@ -57,11 +46,15 @@ QuestionEditorSubView::QuestionEditorSubView(QWidget *parent) :
     m_box->addWidget(m_questionBox, 1, 0);
     m_box->addWidget(m_weight, 2, 0);
     m_box->addWidget(m_weightBox, 3, 0);
-    m_box->addWidget(m_back, 4, 0);
+    m_box->addWidget(m_correctAnswer, 4, 0);
+    m_box->addWidget(m_correctAnswerBox, 5, 0);
+    m_box->addWidget(m_incorrectAnswer, 6, 0);
+    m_box->addWidget(m_incorrectAnswerBox, 7, 0);
+    m_box->addWidget(m_back, 8, 0);
 
     m_box->addWidget(m_image, 0, 1);
-    m_box->addWidget(m_loadImg, 1, 1);
-    m_box->addWidget(m_next, 4, 1);
+    m_box->addWidget(m_loadImg, 3, 1);
+    m_box->addWidget(m_next, 8, 1);
 
     m_box->setAlignment(m_back, Qt::AlignRight);
     m_box->setAlignment(m_image, Qt::AlignTop);
@@ -74,7 +67,7 @@ QuestionEditorSubView::QuestionEditorSubView(QWidget *parent) :
 
 void QuestionEditorSubView::resize()
 {
-
+    m_image->setFixedSize(height()*0.3, height()*0.3);
 }
 
 void QuestionEditorSubView::setFixedSize(int w, int h)

@@ -19,19 +19,12 @@ public:
     explicit MainWindow(QWidget *parent = 0);
 
 public slots:
-//    void showSettingsView();
-//    void showTestCreatorView();
     void showMainView(TestViews view);
 
 private:
     void hidePreviuosWindows();
     QRect getScreenGeometry() const;
 
-//    QVBoxLayout        *m_vbox;
-//    QPushButton        *m_settingsBtn;
-//    QPushButton        *m_testCreatorBtn;
-//    TestCreatorView    *m_testCreatorView;
-//    ServerSettingsView *m_serverSettingsView;
     MainWindowTab      *m_wnd;
 };
 

@@ -28,13 +28,6 @@ TestDbView::TestDbView(QWidget *parent) :
     QFont wdgFont("Times", 11);
     m_testBox->setFont(wdgFont);
 
-    QFont font;
-    font.setPixelSize(15);
-
-    m_openTestFile->setFont(font);
-    m_createTestFile->setFont(font);
-    m_loadTestFile->setFont(font);
-
     m_openTestFile->setFixedSize(btnWidth, 50);
     m_createTestFile->setFixedSize(btnWidth, 50);
     m_loadTestFile->setFixedSize(btnWidth, 50);

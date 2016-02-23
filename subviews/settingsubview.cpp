@@ -29,13 +29,15 @@ SettingSubView::SettingSubView(QWidget *parent) :
 {
     setFixedSize(500, 300);
 
+    //tbd resolve stylesheets problem
+    //this->setStyleSheet("QPushButton { min-height: 50px; }");
+    //this->setStyleSheet("QPlainTextEdit { min-height: 50px; }");
+    //this->setStyleSheet("QLineEdit { min-height: 50px; }");
+
     connect(m_startBtn, &QPushButton::clicked, this, &SettingSubView::startServer);
     connect(m_stopBtn,  &QPushButton::clicked, m_server, &TcpServer::stopServer);
     connect(m_chooseTestDb,  &QPushButton::clicked, this, &SettingSubView::chooseTestDB);
     connect(m_chooseResDb,  &QPushButton::clicked, this, &SettingSubView::chooseResDB);
-
-    QFont font;
-    font.setPixelSize(15);
 
     m_startBtn->setFixedHeight(btnHeight);
     m_stopBtn->setFixedHeight(btnHeight);
@@ -46,17 +48,8 @@ SettingSubView::SettingSubView(QWidget *parent) :
     m_chooseTestDb->setFixedHeight(btnHeight);
     m_chooseResDb->setFixedHeight(btnHeight);
 
-    m_testBox->setFont(font);
-    m_resultBox->setFont(font);
     m_testBox->setReadOnly(true);
     m_resultBox->setReadOnly(true);
-
-    m_startBtn->setFont(font);
-    m_stopBtn->setFont(font);
-    m_localhost->setFont(font);
-    m_port->setFont(font);
-    m_chooseTestDb->setFont(font);
-    m_chooseResDb->setFont(font);
 
     m_startBtn->setText("Запустить сервер");
     m_stopBtn->setText("Остановить сервер");

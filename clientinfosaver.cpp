@@ -8,7 +8,7 @@ ClientInfoSaver::ClientInfoSaver(qintptr id, QObject *parent) :
     m_db(new SqlDBSaver(this))
 {
     qRegisterMetaType<StudentResult>("StudentResult");
-   //!!!!!!!!!!!!!!!!!!!!!not forget uncomment
+
     // connect(this, &ClientInfoSaver::saveResultToDataBase, m_db, &SqlDBSaver::saveStudentResultToDb);
     this->m_socketDescriptor = id;
 }

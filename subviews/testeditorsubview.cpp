@@ -29,18 +29,6 @@ TestEditorSubView::TestEditorSubView(QWidget *parent) :
     connect(m_testTimeBox, &QTimeEdit::editingFinished, this, &TestEditorSubView::setTestTime);
     connect(m_questionCountBox, &QLineEdit::editingFinished, this, &TestEditorSubView::setQuestionCount);
 
-    QFont font;
-    font.setPixelSize(15);
-
-    m_testName->setFont(font);
-    m_testTime->setFont(font);
-    m_questionCount->setFont(font);
-    m_testNameBox->setFont(font);
-    m_testTimeBox->setFont(font);
-    m_questionCountBox->setFont(font);
-    m_addQuestions->setFont(font);
-    m_loadFromDoc->setFont(font);
-
     m_testName->setFixedHeight(elHeight);
     m_testTime->setFixedHeight(elHeight);
     m_questionCount->setFixedHeight(elHeight);
