@@ -7,6 +7,7 @@
 #include <QRegExpValidator>
 #include <QTimeEdit>
 #include <QMessageBox>
+#include <QFileDialog>
 
 namespace {
 const int elHeight = 50;
@@ -21,13 +22,16 @@ TestEditorSubView::TestEditorSubView(QWidget *parent) :
     m_testNameBox(new QLineEdit(this)),
     m_testTimeBox(new QTimeEdit(this)),
     m_questionCountBox(new QLineEdit(this)),
-    m_addQuestions(new QPushButton("Добавить вопросы", this)),
-    m_loadFromDoc(new QPushButton("Загрузить тест из Doc файла", this))
+    m_addQuestions(new QPushButton("Заполнить вопросы", this)),
+    m_loadFromDoc(new QPushButton("Загрузить тест из Doc файла", this)),
+    m_saveinDb(new QPushButton("Сохранить в БД", this))
 {
     connect(m_addQuestions, &QPushButton::clicked, this, &TestEditorSubView::addQuestions);
     connect(m_testNameBox, &QLineEdit::editingFinished, this, &TestEditorSubView::setTestName);
     connect(m_testTimeBox, &QTimeEdit::editingFinished, this, &TestEditorSubView::setTestTime);
     connect(m_questionCountBox, &QLineEdit::editingFinished, this, &TestEditorSubView::setQuestionCount);
+    connect(m_saveinDb, &QPushButton::clicked, this, &TestEditorSubView::saveDataInDb);
+    connect(m_loadFromDoc, &QPushButton::clicked, this, &TestEditorSubView::loadDocFile);
 
     m_testName->setFixedHeight(elHeight);
     m_testTime->setFixedHeight(elHeight);
@@ -37,6 +41,7 @@ TestEditorSubView::TestEditorSubView(QWidget *parent) :
     m_questionCountBox->setFixedHeight(elHeight);
     m_addQuestions->setFixedHeight(elHeight);
     m_loadFromDoc->setFixedHeight(elHeight);
+    m_saveinDb->setFixedHeight(elHeight);
 
     m_questionCountBox->setValidator(new QRegExpValidator(QRegExp("\\d+"), this));
 
@@ -51,6 +56,7 @@ TestEditorSubView::TestEditorSubView(QWidget *parent) :
     m_box->addWidget(m_testNameBox, 0, 1);
     m_box->addWidget(m_testTimeBox, 1, 1);
     m_box->addWidget(m_questionCountBox, 2, 1);
+    m_box->addWidget(m_saveinDb, 5, 0);
 
     setLayout(m_box);
 }
@@ -72,6 +78,12 @@ void TestEditorSubView::addQuestions()
         emit showSubView(QuestionEditor);
     else
         QMessageBox::warning(0, "Warning", "Сперва введите количество вопросов.");
+}
+
+void TestEditorSubView::loadDocFile()
+{
+    QString filePath = QFileDialog::getOpenFileName(this, tr("Choose Test Document"), "", "DOC(*.doc *.docx)");
+    emit loadedDocFile(filePath);
 }
 
 void TestEditorSubView::setTestName()

@@ -54,7 +54,32 @@ void SqlDBSaver::saveTestToDb(const QString &dbName, const TestData &result)
         return;
     }
 
-    // populate with some data
+    //firstly lets check if test name already exists and delete it and all data connected with it
+    QSqlQuery q_existed(dbPtr);
+    q_existed.prepare("SELECT id FROM testdata WHERE testname=:testname");
+    q_existed.bindValue(":testname", result.testName);
+    if (q_existed.exec()) {
+        int idField = q_existed.record().indexOf("id");
+        int testId = 0;
+
+        if (q_existed.next()) {
+            QMessageBox::warning(0, "Warning", QString("Внимание, в базе найден тест с именем %1.\nОн будет заменен на текущий.").arg(result.testName));
+
+            testId = q_existed.value(idField).toInt();
+            QSqlQuery q_deleteId(dbPtr);
+            q_deleteId.prepare("DELETE FROM questionsdata WHERE testid=:testid");
+            q_deleteId.bindValue(":testid", testId);
+            q_deleteId.exec();
+
+            QSqlQuery q_delete(dbPtr);
+            q_delete.prepare("DELETE FROM testdata WHERE testname=:testname");
+            q_delete.bindValue(":testname", result.testName);
+            q_delete.exec();
+        }
+    }
+
+
+    // insert new test data
     QSqlQuery q_insert(dbPtr);
     q_insert.prepare("INSERT INTO testdata (testname, testtime, questioncount) VALUES ( :testname, :testtime, :questioncount)");
 
@@ -76,37 +101,37 @@ void SqlDBSaver::saveTestToDb(const QString &dbName, const TestData &result)
         int testId = 0;
         while (q_select.next()) {
             testId = q_select.value(fieldNo).toInt();
-        }
 
-        for (int i = 0; i < result.questions.count(); i++) {
-            QSqlQuery q_ins(dbPtr);
-            q_ins.prepare("INSERT INTO questionsdata (testid, question, testweight, correctanswer, uncorrectanswers, imgname, image) VALUES (:testid, :question, :testweight, :correctanswer, :uncorrectanswers, :imgname, :image)");
-            q_ins.bindValue(":testid", testId);
-            q_ins.bindValue(":question", result.questions.at(i).question);
-            q_ins.bindValue(":testweight", result.questions.at(i).weight);
-            q_ins.bindValue(":correctanswer", result.questions.at(i).answers.correctAnswer);
-            q_ins.bindValue(":uncorrectanswers", result.questions.at(i).answers.uncorrectAnswers);
+            for (int i = 0; i < result.questions.count(); i++) {
+                QSqlQuery q_ins(dbPtr);
+                q_ins.prepare("INSERT INTO questionsdata (testid, question, testweight, correctanswer, uncorrectanswers, imgname, image) VALUES (:testid, :question, :testweight, :correctanswer, :uncorrectanswers, :imgname, :image)");
+                q_ins.bindValue(":testid", testId);
+                q_ins.bindValue(":question", result.questions.at(i).question);
+                q_ins.bindValue(":testweight", result.questions.at(i).weight);
+                q_ins.bindValue(":correctanswer", result.questions.at(i).answers.correctAnswer);
+                q_ins.bindValue(":uncorrectanswers", result.questions.at(i).answers.uncorrectAnswers);
 
-            QPixmap inPixmap(result.questions.at(i).answers.imgPath);
+                QPixmap inPixmap(result.questions.at(i).answers.imgPath);
 
-            //get file extention
-            int index = result.questions.at(i).answers.imgPath.lastIndexOf(".");
-            QString extention = result.questions.at(i).answers.imgPath.mid(index + 1, result.questions.at(i).answers.imgPath.count() - index - 1);
-            extention = extention.toUpper();
+                //get file extention
+                int index = result.questions.at(i).answers.imgPath.lastIndexOf(".");
+                QString extention = result.questions.at(i).answers.imgPath.mid(index + 1, result.questions.at(i).answers.imgPath.count() - index - 1);
+                extention = extention.toUpper();
 
-            //get file name
-            int separator = result.questions.at(i).answers.imgPath.lastIndexOf("/");
-            QString filename = result.questions.at(i).answers.imgPath.mid(separator + 1, result.questions.at(i).answers.imgPath.count() - separator - 1);
+                //get file name
+                int separator = result.questions.at(i).answers.imgPath.lastIndexOf("/");
+                QString filename = result.questions.at(i).answers.imgPath.mid(separator + 1, result.questions.at(i).answers.imgPath.count() - separator - 1);
 
-            //load image to data base :-)!!!
-            QByteArray inByteArray;
-            QBuffer inBuffer( &inByteArray );
-            inBuffer.open(QIODevice::WriteOnly);
-            inPixmap.save(&inBuffer, extention.toStdString().c_str());
+                //load image to data base :-)!!!
+                QByteArray inByteArray;
+                QBuffer inBuffer( &inByteArray );
+                inBuffer.open(QIODevice::WriteOnly);
+                inPixmap.save(&inBuffer, extention.toStdString().c_str());
 
-            q_ins.bindValue(":imgname", filename);
-            q_ins.bindValue(":image", inByteArray);
-            q_ins.exec();
+                q_ins.bindValue(":imgname", filename);
+                q_ins.bindValue(":image", inByteArray);
+                q_ins.exec();
+            }
         }
     }
 

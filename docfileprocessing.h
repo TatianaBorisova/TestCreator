@@ -14,7 +14,7 @@ class DocFileProcessing : public QObject
 public:
     explicit DocFileProcessing(QObject *parent = 0);
 
-    void readFromDocFile(const QString &filename, QWidget *parent);
+    TestData readFromDocFile(const QString &filename, QWidget *parent);
     void readFromDocSet(const QString &filename, QWidget *parent);
 
     QString generateTestFile() const;
@@ -22,7 +22,10 @@ public:
     void printReadData();
 
 private:
-    QString getFirstTestString();
+    QString getStatementString();
+    QString getTestNameString(const QString &filetext);
+    QString getTestTimeString(const QString &filetext);
+    QString getQuestCountString(const QString &filetext);
     QString firstTestString(int firstIndex, QString readStatement);
     QString clearAnswerString(const QString &str);
     QString clearStatementString(const QString &str);
@@ -36,6 +39,7 @@ private:
     QString         m_docTextString;
     QAxWidget      *m_wordApp;
     QString         m_testFileName;
+    TestData        m_loadedData;
 };
 
 #endif // DOCFILEPROCESSING_H

@@ -10,6 +10,9 @@
 #include <QMessageBox>
 
 namespace {
+const QString header = QString("название:");
+const QString doingTime = QString("время выполнения:");
+const QString questionCount = QString("количество вопросов:");
 const QString correctAnswer = QString("верный ответ:");
 const QString incorrectAnswer = QString("неверные ответы:");
 const QString picturePath = QString("картинка:");
@@ -51,7 +54,7 @@ void DocFileProcessing::readFromDocSet(const QString &filename, QWidget *parent)
         }
 
         QString statementStr("");
-        while(!(statementStr = getFirstTestString()).isEmpty()) {
+        while(!(statementStr = getStatementString()).isEmpty()) {
             m_testList.append(statementStr);
         }
 
@@ -61,8 +64,13 @@ void DocFileProcessing::readFromDocSet(const QString &filename, QWidget *parent)
     }
 }
 
-void DocFileProcessing::readFromDocFile(const QString &filename, QWidget *parent)
+TestData DocFileProcessing::readFromDocFile(const QString &filename, QWidget *parent)
 {
+    m_loadedData.questions.clear();
+    m_loadedData.questionCount = 0;
+    m_loadedData.testName.clear();
+    m_loadedData.testTime = QTime(0, 0);
+
     if (!filename.isEmpty()) {
 
         setSavingFileName(filename);
@@ -79,15 +87,31 @@ void DocFileProcessing::readFromDocFile(const QString &filename, QWidget *parent
             m_docTextString += QString(words->querySubObject("Item(int)", a)->dynamicCall("Text()").toString()).toLower();
         }
 
+        m_loadedData.testName = getTestNameString(m_docTextString);
+        m_loadedData.testTime = QTime::fromString(getTestTimeString(m_docTextString));
+        m_loadedData.questionCount = getQuestCountString(m_docTextString).toInt();
+
         QString statementStr("");
-        while(!(statementStr = getFirstTestString()).isEmpty()) {
+        while(!(statementStr = getStatementString()).isEmpty()) {
             m_testList.append(statementStr);
         }
 
         for (int i = 0; i < m_testList.count(); i++) {
             fillTestQuestionInfo(m_testList.at(i));
         }
+
+        for (int i = 0; i < m_statementList.count(); i++) {
+            TestQuestions question;
+            question.question = m_statementList.at(i);
+            question.weight = 1;
+            question.answers.correctAnswer = m_answerList.at(i).correctAnswer;
+            question.answers.uncorrectAnswers = m_answerList.at(i).uncorrectAnswers;
+            question.answers.imgPath = m_answerList.at(i).imgPath;
+
+            m_loadedData.questions.append(question);
+        }
     }
+    return m_loadedData;
 }
 
 QString DocFileProcessing::generateTestFile() const
@@ -202,8 +226,53 @@ void DocFileProcessing::clearData()
     m_answerList.clear();
     m_docTextString.clear();
 }
+/////////////////////finish loading from file
+QString DocFileProcessing::getTestNameString(const QString &filetext)
+{
+    QString result("");
+    QString text = filetext;
 
-QString DocFileProcessing::getFirstTestString()
+    int startInd = text.lastIndexOf(header);
+    int endInd = text.lastIndexOf(doingTime);
+
+    if (startInd != -1) {
+        result = text.mid(startInd + header.count(), endInd - (startInd + header.count()));
+    }
+
+    return result;
+}
+
+QString DocFileProcessing::getTestTimeString(const QString &filetext)
+{
+    QString result("");
+    QString text = filetext;
+
+    int startInd = text.lastIndexOf(doingTime);
+    int endInd = text.lastIndexOf(questionCount);
+
+    if (startInd != -1) {
+        result = text.mid(startInd + doingTime.count(), endInd - (startInd + doingTime.count()));
+    }
+
+    return result;
+}
+
+QString DocFileProcessing::getQuestCountString(const QString &filetext)
+{
+    QString result("");
+    QString text = filetext;
+
+    int startInd = text.lastIndexOf(questionCount);
+    int endInd = text.lastIndexOf(statement);
+
+    if (startInd != -1) {
+        result = text.mid(startInd + questionCount.count(), endInd - (startInd + questionCount.count()));
+    }
+
+    return result;
+}
+
+QString DocFileProcessing::getStatementString()
 {
     QString result("");
     int firstIndex = -1;

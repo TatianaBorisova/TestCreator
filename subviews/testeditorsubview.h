@@ -24,12 +24,15 @@ signals:
     void testNameChanged(const QString &name);
     void testTimeChanged(const QTime &time);
     void questionCountChanged(int value);
+    void saveDataInDb();
+    void loadedDocFile(const QString &filename);
 
 protected:
     virtual void resize();
 
 private slots:
     void addQuestions();
+    void loadDocFile();
 
 private:
     QGridLayout *m_box;
@@ -41,6 +44,7 @@ private:
     QLineEdit *m_questionCountBox;
     QPushButton *m_addQuestions;
     QPushButton *m_loadFromDoc;
+    QPushButton *m_saveinDb;
 };
 
 #endif // TESTEDITORSUBVIEW_H

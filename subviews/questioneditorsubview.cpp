@@ -8,6 +8,8 @@
 #include <QRegExpValidator>
 #include <QFileDialog>
 
+#include <QDebug>
+
 namespace {
 const int minHeight = 50;
 }
@@ -15,7 +17,7 @@ const int minHeight = 50;
 QuestionEditorSubView::QuestionEditorSubView(QWidget *parent) :
     TestCreatorBaseView(parent),
     m_box(new QGridLayout(this)),
-    m_question(new QLabel("Содержание вопроса:", this)),
+    m_question(new QLabel("Содержание вопроса № %1:", this)),
     m_weight(new QLabel("Вес вопроса:", this)),
     m_image(new QLabel(this)),
     m_correctAnswer(new QLabel("Верный ответ:", this)),
@@ -32,6 +34,8 @@ QuestionEditorSubView::QuestionEditorSubView(QWidget *parent) :
 
     connect(m_back, &QPushButton::clicked, this, &QuestionEditorSubView::back);
     connect(m_loadImg, &QPushButton::clicked, this, &QuestionEditorSubView::loadImage);
+    connect(m_next, &QPushButton::clicked, this, &QuestionEditorSubView::next);
+    connect(this, &QuestionEditorSubView::questionCounterChanged, this, &QuestionEditorSubView::setBackBtnText);
 
     m_weight->setAlignment(Qt::AlignBottom);
     m_question->setAlignment(Qt::AlignBottom);
@@ -78,12 +82,50 @@ void QuestionEditorSubView::setFixedSize(int w, int h)
     resize();
 }
 
+void QuestionEditorSubView::setQuestionsCount(int count)
+{
+    m_questionCounter = 0;
+    m_questionMax = count;
+
+    m_question->setText("Содержание вопроса № " + QString::number(m_questionCounter + 1));
+}
+
+void QuestionEditorSubView::updatedIndexData(const TestQuestions &test)
+{
+    m_questionBox->setPlainText(test.question);
+    m_weightBox->setText(QString::number(test.weight));
+    m_correctAnswerBox->setPlainText(test.answers.correctAnswer);
+    m_incorrectAnswerBox->setPlainText(test.answers.uncorrectAnswers);
+    m_filepath = test.answers.imgPath;
+    if (!m_filepath.isEmpty()) {
+        m_image->setPixmap(QPixmap(m_filepath).scaled(m_image->width(), m_image->height()));
+    }
+}
+
 void QuestionEditorSubView::back()
 {
-    if (m_questionCounter == 0)
+    TestQuestions question;
+    question.question = m_questionBox->toPlainText();
+    question.weight = m_weightBox->text().toInt();
+    question.answers.correctAnswer = m_correctAnswerBox->toPlainText();
+    question.answers.uncorrectAnswers = m_incorrectAnswerBox->toPlainText();
+    question.answers.imgPath = m_filepath;
+
+    emit createdQuestion(question, questionCounter());
+    clearQuestionArea();
+
+    //if first or last element - return to TEST view
+    if (questionCounter() == 0 || questionCounter() == m_questionMax - 1) {
+
+        setQuestionCounter(0);
         emit showSubView(TestEditor);
-    else
-        m_questionCounter--;
+
+    } else {
+
+        //else go to previous question entry
+        setQuestionCounter(questionCounter() - 1);
+    }
+    m_question->setText("Содержание вопроса № " + QString::number(questionCounter() + 1));
 }
 
 void QuestionEditorSubView::loadImage()
@@ -95,13 +137,61 @@ void QuestionEditorSubView::loadImage()
 
 void QuestionEditorSubView::next()
 {
-    TestQuestions test;
-    test.question = m_questionBox->toPlainText();
-    test.weight = m_weightBox->text().toInt();
-    test.answers.correctAnswer = m_correctAnswerBox->toPlainText();
-    test.answers.uncorrectAnswers = m_incorrectAnswerBox->toPlainText();
-    test.answers.imgPath = m_filepath;
+    TestQuestions question;
+    question.question = m_questionBox->toPlainText();
+    question.weight = m_weightBox->text().toInt();
+    question.answers.correctAnswer = m_correctAnswerBox->toPlainText();
+    question.answers.uncorrectAnswers = m_incorrectAnswerBox->toPlainText();
+    question.answers.imgPath = m_filepath;
 
-    emit createdQuestion(test, m_questionCounter);
-    m_questionCounter++;
+    emit createdQuestion(question, questionCounter());
+    clearQuestionArea();
+
+    //if last question - return to TEST view
+    if (questionCounter() == m_questionMax - 1) {
+
+        setQuestionCounter(0);
+        emit showSubView(TestEditor);
+        m_question->setText("Содержание вопроса № " + QString::number(questionCounter()));
+
+    } else {
+        //go to next question entry
+        setQuestionCounter(questionCounter() + 1);
+        m_question->setText("Содержание вопроса № " + QString::number(questionCounter() + 1));
+    }
+}
+
+void QuestionEditorSubView::clearQuestionArea()
+{
+    m_questionBox->setPlainText("");
+    m_weightBox->setText("");
+    m_correctAnswerBox->setPlainText("");
+    m_incorrectAnswerBox->setPlainText("");
+    m_image->clear();
+    m_filepath.clear();
+}
+
+int QuestionEditorSubView::questionCounter() const
+{
+    return m_questionCounter;
+}
+
+void QuestionEditorSubView::setQuestionCounter(int count)
+{
+    m_questionCounter = count;
+    emit questionCounterChanged(count);
+}
+
+void QuestionEditorSubView::setBackBtnText(int index)
+{
+    if (index == 0 || index == m_questionMax - 1) {
+        m_back->setText("Cохранить и вернуться в начало");
+    } else {
+        m_back->setText("Сохранить и к предыдущему вопросу");
+    }
+    if (index == m_questionMax - 1) {
+        m_next->setEnabled(false);
+    } else {
+        m_next->setEnabled(true);
+    }
 }
