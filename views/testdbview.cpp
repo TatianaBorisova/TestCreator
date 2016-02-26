@@ -18,22 +18,18 @@ TestDbView::TestDbView(QWidget *parent) :
     m_vbox(new QVBoxLayout(this)),
     m_testBox(new QListWidget(this)),
     m_openTestFile(new QPushButton("Открыть тест", this)),
-    m_createTestFile(new QPushButton("Создать новый тест", this)),
-    m_loadTestFile(new QPushButton("Загрузить из Doc файла", this))
+    m_createTestFile(new QPushButton("Создать новый тест", this))
 {
     connect(m_openTestFile, &QPushButton::clicked, this, &TestDbView::openExistedTest);
     connect(m_createTestFile, &QPushButton::clicked, this, &TestDbView::createNewTest);
-    connect(m_loadTestFile, &QPushButton::clicked, this, &TestDbView::loadFromDocFile);
 
     QFont wdgFont("Times", 11);
     m_testBox->setFont(wdgFont);
 
     m_openTestFile->setFixedSize(btnWidth, 50);
     m_createTestFile->setFixedSize(btnWidth, 50);
-    m_loadTestFile->setFixedSize(btnWidth, 50);
 
     m_vbox->addWidget(m_openTestFile);
-    m_vbox->addWidget(m_loadTestFile);
     m_vbox->addWidget(m_createTestFile);
 
     m_box->setSpacing(minHeight);
@@ -58,14 +54,12 @@ void TestDbView::setFixedSize(int w, int h)
 
 void TestDbView::loadFromDocFile()
 {
-    QString filePath = QFileDialog::getOpenFileName(this, tr("Choose Test Document"), "", "Doc(*.doc, *.docx)");
-    emit testFileName(filePath);
+//    QString filePath = QFileDialog::getOpenFileName(this, tr("Choose Test Document"), "", "Doc(*.doc, *.docx)");
     emit showView(CreatorView);
 }
 
 void TestDbView::createNewTest()
 {
-    emit testFileName("");
     emit showView(CreatorView);
 }
 
@@ -74,9 +68,20 @@ void TestDbView::openExistedTest()
     QString filename("");
     if (m_testBox->count() > 0) {
         QListWidgetItem *item = m_testBox->currentItem();
-        if (item)
+        if (item) {
             filename = item->text();
+            QFile file(filename);
+
+            if (file.exists()) {
+                QFileInfo fileExt(filename);
+                QString ext = fileExt.suffix();
+                if (ext == ".doc" || ext == ".docx") {
+                    emit docFileName(filename);
+                } else {
+                    emit bdFileName(filename);
+                }
+            }
+        }
     }
-    emit testFileName(filename);
     emit showView(CreatorView);
 }

@@ -115,7 +115,7 @@ void QuestionEditorSubView::back()
     clearQuestionArea();
 
     //if first or last element - return to TEST view
-    if (questionCounter() == 0 || questionCounter() == m_questionMax - 1) {
+    if (questionCounter() == 0 /*|| questionCounter() == m_questionMax - 1*/) {
 
         setQuestionCounter(0);
         emit showSubView(TestEditor);
@@ -184,14 +184,14 @@ void QuestionEditorSubView::setQuestionCounter(int count)
 
 void QuestionEditorSubView::setBackBtnText(int index)
 {
-    if (index == 0 || index == m_questionMax - 1) {
+    if (index == 0) {
         m_back->setText("Cохранить и вернуться в начало");
     } else {
         m_back->setText("Сохранить и к предыдущему вопросу");
     }
     if (index == m_questionMax - 1) {
-        m_next->setEnabled(false);
+        m_next->setText("Cохранить и вернуться в начало");
     } else {
-        m_next->setEnabled(true);
+        m_next->setText("Сохранить и перейти в следующему");
     }
 }

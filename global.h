@@ -56,7 +56,8 @@ enum TestViews {
 
 enum SubViews {
     TestEditor = 0,
-    QuestionEditor
+    QuestionEditor,
+    QuestionViewer
 };
 
 #endif // GLOBAL

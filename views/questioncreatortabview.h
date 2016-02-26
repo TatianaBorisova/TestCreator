@@ -7,6 +7,7 @@ class QuestionEditorSubView;
 class TestEditorSubView;
 class SqlDBSaver;
 class DocFileProcessing;
+class QuestionsListSubView;
 
 class QuestionCreatorTabView : public TestCreatorBaseView
 {
@@ -19,6 +20,7 @@ public:
 
 signals:
     void updatedIndexData(const TestQuestions &test);
+    void loadTestData(const TestData &data);
 
 public slots:
     void testDbChanged(const QString &dbname);
@@ -29,6 +31,7 @@ public slots:
     void updatedValue(int index);
     void saveDataInDb();
     void loadDataFromDocFile(const QString &name);
+    void setLoadedQuestionsCount(int value);
 
 protected slots:
     void showSubView(SubViews view);
@@ -38,9 +41,11 @@ protected:
 
 private:
     void printTestData();
+    void hidePreviuosWindows();
 
     QuestionEditorSubView *m_questionEditor;
     TestEditorSubView     *m_testData;
+    QuestionsListSubView  *m_questionsViewer;
     //creating test data
     TestData               m_data;
     SqlDBSaver            *m_dbSave;

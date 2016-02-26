@@ -31,6 +31,7 @@ private:
     QString clearStatementString(const QString &str);
     void fillTestQuestionInfo(QString str);
     void setSavingFileName(const QString &file);
+    void takeTestHeaderinfo();
     QString getFileName(const QString &file, bool withFileExtention = false) const;
 
     QStringList     m_testList;

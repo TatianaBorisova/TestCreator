@@ -26,6 +26,10 @@ signals:
     void questionCountChanged(int value);
     void saveDataInDb();
     void loadedDocFile(const QString &filename);
+    void questionCountLoadedFromFile(int value);
+
+public slots:
+    void loadTestFileData(const TestData &data);
 
 protected:
     virtual void resize();
@@ -33,6 +37,7 @@ protected:
 private slots:
     void addQuestions();
     void loadDocFile();
+    void showQuestionsListView();
 
 private:
     QGridLayout *m_box;
@@ -45,6 +50,7 @@ private:
     QPushButton *m_addQuestions;
     QPushButton *m_loadFromDoc;
     QPushButton *m_saveinDb;
+    QPushButton *m_questionView;
 };
 
 #endif // TESTEDITORSUBVIEW_H

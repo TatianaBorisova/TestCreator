@@ -87,9 +87,7 @@ TestData DocFileProcessing::readFromDocFile(const QString &filename, QWidget *pa
             m_docTextString += QString(words->querySubObject("Item(int)", a)->dynamicCall("Text()").toString()).toLower();
         }
 
-        m_loadedData.testName = getTestNameString(m_docTextString);
-        m_loadedData.testTime = QTime::fromString(getTestTimeString(m_docTextString));
-        m_loadedData.questionCount = getQuestCountString(m_docTextString).toInt();
+        takeTestHeaderinfo();
 
         QString statementStr("");
         while(!(statementStr = getStatementString()).isEmpty()) {
@@ -226,6 +224,7 @@ void DocFileProcessing::clearData()
     m_answerList.clear();
     m_docTextString.clear();
 }
+
 /////////////////////finish loading from file
 QString DocFileProcessing::getTestNameString(const QString &filetext)
 {
@@ -239,7 +238,7 @@ QString DocFileProcessing::getTestNameString(const QString &filetext)
         result = text.mid(startInd + header.count(), endInd - (startInd + header.count()));
     }
 
-    return result;
+    return clearStatementString(result);
 }
 
 QString DocFileProcessing::getTestTimeString(const QString &filetext)
@@ -247,14 +246,14 @@ QString DocFileProcessing::getTestTimeString(const QString &filetext)
     QString result("");
     QString text = filetext;
 
-    int startInd = text.lastIndexOf(doingTime);
-    int endInd = text.lastIndexOf(questionCount);
+    int startInd = text.indexOf(doingTime);
+    int endInd = text.indexOf(questionCount);
 
     if (startInd != -1) {
         result = text.mid(startInd + doingTime.count(), endInd - (startInd + doingTime.count()));
     }
 
-    return result;
+    return clearStatementString(result);
 }
 
 QString DocFileProcessing::getQuestCountString(const QString &filetext)
@@ -262,14 +261,14 @@ QString DocFileProcessing::getQuestCountString(const QString &filetext)
     QString result("");
     QString text = filetext;
 
-    int startInd = text.lastIndexOf(questionCount);
-    int endInd = text.lastIndexOf(statement);
+    int startInd = text.indexOf(questionCount);
+    int endInd = text.indexOf(statement);
 
     if (startInd != -1) {
         result = text.mid(startInd + questionCount.count(), endInd - (startInd + questionCount.count()));
     }
 
-    return result;
+    return clearStatementString(result);
 }
 
 QString DocFileProcessing::getStatementString()
@@ -321,8 +320,14 @@ QString DocFileProcessing::clearStatementString(const QString &str)
     QRegExp regExp("[\r\n]");
     QString result = str;
 
-    result = result.replace(regExp, " "); //change regexp to empty character
-    result = result.replace("  ", " "); //change doubles
+    result = result.replace(regExp, ""); //change regexp to empty character
+
+    while(result.indexOf(" ") == 0)
+        result = result.remove(0, 1);
+
+    while(result.count() && result.lastIndexOf(" ") == result.count() - 1) {
+        result = result.remove(result.count() - 1, 1);
+    }
 
     return result;
 }
@@ -360,4 +365,16 @@ QString DocFileProcessing::getFileName(const QString &file, bool withFileExtenti
     }
 
     return fillName;
+}
+
+void DocFileProcessing::takeTestHeaderinfo()
+{
+    m_loadedData.testName = getTestNameString(m_docTextString);
+    m_loadedData.testTime = QTime::fromString(getTestTimeString(m_docTextString), "hh:mm");
+    m_loadedData.questionCount = getQuestCountString(m_docTextString).toInt();
+
+    int testHeaderStart = m_docTextString.indexOf(header);
+    int testHeaderEnd = m_docTextString.indexOf(statement);
+
+    m_docTextString = m_docTextString.remove(testHeaderStart, testHeaderEnd);
 }

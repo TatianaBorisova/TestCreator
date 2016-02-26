@@ -17,7 +17,9 @@ public:
     void setFixedSize(int w, int h);
 
 signals:
-    void testFileName(const QString &filename);
+    void bdFileName(const QString &filename);
+    void docFileName(const QString &filename);
+
 
 protected:
     virtual void resize();
@@ -33,7 +35,6 @@ private:
     QListWidget *m_testBox;
     QPushButton *m_openTestFile;
     QPushButton *m_createTestFile;
-    QPushButton *m_loadTestFile;
 };
 
 #endif // TESTDBVIEW_H
