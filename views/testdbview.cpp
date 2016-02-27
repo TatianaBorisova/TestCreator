@@ -5,6 +5,9 @@
 #include <QGridLayout>
 #include <QTabWidget>
 #include <QFileDialog>
+#include <QComboBox>
+
+#include <QDebug>
 
 namespace {
 const QLatin1String slash = QLatin1String("/");
@@ -18,17 +21,21 @@ TestDbView::TestDbView(QWidget *parent) :
     m_vbox(new QVBoxLayout(this)),
     m_testBox(new QListWidget(this)),
     m_openTestFile(new QPushButton("Открыть тест", this)),
-    m_createTestFile(new QPushButton("Создать новый тест", this))
+    m_createTestFile(new QPushButton("Создать новый тест", this)),
+    m_folderContainer(new QPushButton("Выбрать папку", this))
 {
     connect(m_openTestFile, &QPushButton::clicked, this, &TestDbView::openExistedTest);
     connect(m_createTestFile, &QPushButton::clicked, this, &TestDbView::createNewTest);
+    connect(m_folderContainer, &QPushButton::clicked, this, &TestDbView::loadFromFolder);
 
     QFont wdgFont("Times", 11);
     m_testBox->setFont(wdgFont);
 
     m_openTestFile->setFixedSize(btnWidth, 50);
     m_createTestFile->setFixedSize(btnWidth, 50);
+    m_folderContainer->setFixedSize(btnWidth, 50);
 
+    m_vbox->addWidget(m_folderContainer);
     m_vbox->addWidget(m_openTestFile);
     m_vbox->addWidget(m_createTestFile);
 
@@ -52,10 +59,29 @@ void TestDbView::setFixedSize(int w, int h)
     resize();
 }
 
-void TestDbView::loadFromDocFile()
+void TestDbView::loadFromFolder()
 {
-//    QString filePath = QFileDialog::getOpenFileName(this, tr("Choose Test Document"), "", "Doc(*.doc, *.docx)");
-    emit showView(CreatorView);
+    QString filePath = QFileDialog::getExistingDirectory(this, tr("Open Directory"));
+
+    if (!filePath.isEmpty()) {
+
+        m_testBox->clear();
+        QDir chosenDir(filePath);
+
+        QStringList fileFilter;
+        QStringList allFiles = chosenDir.entryList(fileFilter);
+
+        qDebug() << "allFiles = " << allFiles.count() << filePath;
+        for (int i = 0; i < allFiles.count(); i++) {
+            if (!findDumlicateFile(m_testBox, allFiles.at(i))) {
+
+                QListWidgetItem *newItem = new QListWidgetItem();
+
+                newItem->setText(filePath + allFiles.at(i));
+                m_testBox->insertItem(m_testBox->count(), newItem);
+            }
+        }
+    }
 }
 
 void TestDbView::createNewTest()
@@ -85,3 +111,15 @@ void TestDbView::openExistedTest()
     }
     emit showView(CreatorView);
 }
+
+bool TestDbView::findDumlicateFile(QListWidget *itemBox, const QString &fileName)
+{
+    if (itemBox) {
+        for (int i = 0; i < itemBox->count(); i++) {
+            if (fileName == itemBox->item(i)->text())
+                return true;
+        }
+    }
+    return false;
+}
+

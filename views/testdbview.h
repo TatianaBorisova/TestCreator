@@ -25,16 +25,19 @@ protected:
     virtual void resize();
 
 protected slots:
-    void loadFromDocFile();
+    void loadFromFolder();
     void createNewTest();
     void openExistedTest();
 
 private:
+    bool findDumlicateFile(QListWidget *itemBox, const QString &fileName);
+
     QGridLayout *m_box;
     QVBoxLayout *m_vbox;
     QListWidget *m_testBox;
     QPushButton *m_openTestFile;
     QPushButton *m_createTestFile;
+    QPushButton   *m_folderContainer;
 };
 
 #endif // TESTDBVIEW_H
