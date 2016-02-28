@@ -65,13 +65,13 @@ void TestDbView::loadFromFolder()
 
     if (!filePath.isEmpty()) {
 
+        filePath = filePath + "/";
+
         m_testBox->clear();
+
         QDir chosenDir(filePath);
+        QStringList allFiles = chosenDir.entryList(QDir::Files | QDir::NoDotAndDotDot);
 
-        QStringList fileFilter;
-        QStringList allFiles = chosenDir.entryList(fileFilter);
-
-        qDebug() << "allFiles = " << allFiles.count() << filePath;
         for (int i = 0; i < allFiles.count(); i++) {
             if (!findDumlicateFile(m_testBox, allFiles.at(i))) {
 

@@ -17,7 +17,7 @@ public:
     TestData readFromDocFile(const QString &filename, QWidget *parent);
     void readFromDocSet(const QString &filename, QWidget *parent);
 
-    QString generateTestFile() const;
+    QString generateJsonTestFile() const;
     void clearData();
     void printReadData();
 
@@ -31,8 +31,9 @@ private:
     QString clearStatementString(const QString &str);
     void fillTestQuestionInfo(QString str);
     void setSavingFileName(const QString &file);
-    void takeTestHeaderinfo();
+    void takeTestHeaderInfo();
     QString getFileName(const QString &file, bool withFileExtention = false) const;
+    QString addUpperSymbol(const QString &str);
 
     QStringList     m_testList;
     QStringList     m_statementList;

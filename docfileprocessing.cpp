@@ -29,7 +29,6 @@ DocFileProcessing::DocFileProcessing(QObject *parent) :
     QObject(parent),
     m_wordApp(NULL)
 {
-
 }
 
 void DocFileProcessing::readFromDocSet(const QString &filename, QWidget *parent)
@@ -87,7 +86,7 @@ TestData DocFileProcessing::readFromDocFile(const QString &filename, QWidget *pa
             m_docTextString += QString(words->querySubObject("Item(int)", a)->dynamicCall("Text()").toString()).toLower();
         }
 
-        takeTestHeaderinfo();
+        takeTestHeaderInfo();
 
         QString statementStr("");
         while(!(statementStr = getStatementString()).isEmpty()) {
@@ -100,11 +99,11 @@ TestData DocFileProcessing::readFromDocFile(const QString &filename, QWidget *pa
 
         for (int i = 0; i < m_statementList.count(); i++) {
             TestQuestions question;
-            question.question = m_statementList.at(i);
-            question.weight = 1;
-            question.answers.correctAnswer = m_answerList.at(i).correctAnswer;
+            question.question = addUpperSymbol(m_statementList.at(i));
+            question.weight   = 1;
+            question.answers.correctAnswer    = m_answerList.at(i).correctAnswer;
             question.answers.uncorrectAnswers = m_answerList.at(i).uncorrectAnswers;
-            question.answers.imgPath = m_answerList.at(i).imgPath;
+            question.answers.imgPath          = m_answerList.at(i).imgPath;
 
             m_loadedData.questions.append(question);
         }
@@ -112,7 +111,7 @@ TestData DocFileProcessing::readFromDocFile(const QString &filename, QWidget *pa
     return m_loadedData;
 }
 
-QString DocFileProcessing::generateTestFile() const
+QString DocFileProcessing::generateJsonTestFile() const
 {
     qDebug() << "generateTestFile";
 
@@ -367,9 +366,9 @@ QString DocFileProcessing::getFileName(const QString &file, bool withFileExtenti
     return fillName;
 }
 
-void DocFileProcessing::takeTestHeaderinfo()
+void DocFileProcessing::takeTestHeaderInfo()
 {
-    m_loadedData.testName = getTestNameString(m_docTextString);
+    m_loadedData.testName = addUpperSymbol(getTestNameString(m_docTextString));
     m_loadedData.testTime = QTime::fromString(getTestTimeString(m_docTextString), "hh:mm");
     m_loadedData.questionCount = getQuestCountString(m_docTextString).toInt();
 
@@ -377,4 +376,17 @@ void DocFileProcessing::takeTestHeaderinfo()
     int testHeaderEnd = m_docTextString.indexOf(statement);
 
     m_docTextString = m_docTextString.remove(testHeaderStart, testHeaderEnd);
+}
+
+QString DocFileProcessing::addUpperSymbol(const QString &str)
+{
+    QString firstSymbol("");
+    QString result = str;
+
+    if (!result.isEmpty()) {
+        firstSymbol = result.at(0).toUpper();
+        result = result.remove(0, 1);
+        result = firstSymbol + result;
+    }
+    return result;
 }
