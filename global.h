@@ -10,7 +10,8 @@ const int headerMsgSize = 16;
 typedef struct answers {
     QString correctAnswer;
     QString uncorrectAnswers;
-    QString imgPath;
+    QString imgName;
+    QByteArray image;
 } Answers;
 
 typedef struct test{
@@ -41,6 +42,7 @@ typedef struct questions {
 } TestQuestions;
 
 typedef struct testSt {
+    int id;
     QString testName;
     QTime testTime;
     int questionCount;
@@ -57,8 +59,16 @@ enum TestViews {
 enum SubViews {
     TestEditor = 0,
     QuestionEditor,
-    QuestionViewer
+    QuestionViewer,
+    DbViewer
 };
+
+typedef struct testHeader {
+    int id;
+    QString testName;
+    QTime testTime;
+    int questionCount;
+} TestHeaderData;
 
 #endif // GLOBAL
 

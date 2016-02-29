@@ -111,16 +111,16 @@ void SqlDBSaver::saveTestToDb(const QString &dbName, const TestData &result)
                 q_ins.bindValue(":correctanswer", result.questions.at(i).answers.correctAnswer);
                 q_ins.bindValue(":uncorrectanswers", result.questions.at(i).answers.uncorrectAnswers);
 
-                QPixmap inPixmap(result.questions.at(i).answers.imgPath);
+                QPixmap inPixmap(result.questions.at(i).answers.imgName);
 
                 //get file extention
-                int index = result.questions.at(i).answers.imgPath.lastIndexOf(".");
-                QString extention = result.questions.at(i).answers.imgPath.mid(index + 1, result.questions.at(i).answers.imgPath.count() - index - 1);
+                int index = result.questions.at(i).answers.imgName.lastIndexOf(".");
+                QString extention = result.questions.at(i).answers.imgName.mid(index + 1, result.questions.at(i).answers.imgName.count() - index - 1);
                 extention = extention.toUpper();
 
                 //get file name
-                int separator = result.questions.at(i).answers.imgPath.lastIndexOf("/");
-                QString filename = result.questions.at(i).answers.imgPath.mid(separator + 1, result.questions.at(i).answers.imgPath.count() - separator - 1);
+                int separator = result.questions.at(i).answers.imgName.lastIndexOf("/");
+                QString filename = result.questions.at(i).answers.imgName.mid(separator + 1, result.questions.at(i).answers.imgName.count() - separator - 1);
 
                 //load image to data base :-)!!!
                 QByteArray inByteArray;
@@ -166,4 +166,80 @@ void SqlDBSaver::createTestTables(const QString &dbName)
 void SqlDBSaver::createResultTable(const QString &dbName, const QString &tableName)
 {
 
+}
+
+void SqlDBSaver::loadTestDataFromDbFile(const QString &testName)
+{
+    TestData data;
+    QSqlDatabase dbPtr = QSqlDatabase::addDatabase("QSQLITE");
+
+    dbPtr.setDatabaseName(m_db);
+    if (!dbPtr.open()) {
+        QMessageBox::critical(0, "Can not open database", "Не могу открыть базу данных.\n");
+        return;
+    }
+
+    QSqlQuery q_existed(dbPtr);
+    q_existed.prepare("SELECT * FROM testdata WHERE testname=:testname");
+    q_existed.bindValue(":testname", testName);
+
+    if (q_existed.exec()) {
+        while (q_existed.next()) {
+            data.id            = q_existed.value(q_existed.record().indexOf("id")).toInt();
+            data.testName      = q_existed.value(q_existed.record().indexOf("testname")).toString();
+            data.testTime      = q_existed.value(q_existed.record().indexOf("testtime")).toTime();
+            data.questionCount = q_existed.value(q_existed.record().indexOf("questioncount")).toInt();
+        }
+    }
+
+    QSqlQuery q_questions(dbPtr);
+    q_questions.prepare("SELECT * FROM questionsdata WHERE testid=:testid");
+    q_questions.bindValue(":testid", data.id);
+    if (q_questions.exec()) {
+        while (q_questions.next()) {
+            TestQuestions question;
+            question.question = q_questions.value(q_questions.record().indexOf("question")).toString();
+            question.weight = q_questions.value(q_questions.record().indexOf("testweight")).toInt();
+            question.answers.correctAnswer = q_questions.value(q_questions.record().indexOf("correctanswer")).toString();
+            question.answers.uncorrectAnswers = q_questions.value(q_questions.record().indexOf("uncorrectanswers")).toString();
+            question.answers.imgName = q_questions.value(q_questions.record().indexOf("imgname")).toString();
+            question.answers.image = q_questions.value(q_questions.record().indexOf("image")).toByteArray();
+            data.questions.append(question);
+        }
+    }
+    dbPtr.close();
+
+    emit sendFullTestData(data);
+}
+
+void SqlDBSaver::loadDbFile(const QString &filename)
+{
+    QSqlDatabase dbPtr = QSqlDatabase::addDatabase("QSQLITE");
+    dbPtr.setDatabaseName(filename);
+    if (!dbPtr.open()) {
+        QMessageBox::critical(0, "Can not open database", "Не могу открыть базу данных.\n");
+        return;
+    }
+
+    m_db = filename;
+    QList<TestHeaderData> list;
+
+    //firstly lets check if test name already exists and delete it and all data connected with it
+    QSqlQuery q_existed(dbPtr);
+    q_existed.prepare("SELECT * FROM testdata");
+
+    if (q_existed.exec()) {
+        while (q_existed.next()) {
+
+            TestHeaderData testData;
+            testData.id            = q_existed.value(q_existed.record().indexOf("id")).toInt();
+            testData.testName      = q_existed.value(q_existed.record().indexOf("testname")).toString();
+            testData.testTime      = q_existed.value(q_existed.record().indexOf("testtime")).toTime();
+            testData.questionCount = q_existed.value(q_existed.record().indexOf("questioncount")).toInt();
+            list.append(testData);
+        }
+    }
+
+    emit readTests(list);
+    dbPtr.close();
 }

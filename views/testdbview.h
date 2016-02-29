@@ -31,6 +31,8 @@ protected slots:
 
 private:
     bool findDumlicateFile(QListWidget *itemBox, const QString &fileName);
+    void fillChoiceBox(QString folderPath);
+    bool checkIfSqlliteDb(const QString &filename);
 
     QGridLayout *m_box;
     QVBoxLayout *m_vbox;

@@ -96,7 +96,7 @@ void QuestionEditorSubView::updatedIndexData(const TestQuestions &test)
     m_weightBox->setText(QString::number(test.weight));
     m_correctAnswerBox->setPlainText(test.answers.correctAnswer);
     m_incorrectAnswerBox->setPlainText(test.answers.uncorrectAnswers);
-    m_filepath = test.answers.imgPath;
+    m_filepath = test.answers.imgName;
     if (!m_filepath.isEmpty()) {
         m_image->setPixmap(QPixmap(m_filepath).scaled(m_image->width(), m_image->height()));
     }
@@ -109,7 +109,7 @@ void QuestionEditorSubView::back()
     question.weight = m_weightBox->text().toInt();
     question.answers.correctAnswer = m_correctAnswerBox->toPlainText();
     question.answers.uncorrectAnswers = m_incorrectAnswerBox->toPlainText();
-    question.answers.imgPath = m_filepath;
+    question.answers.imgName = m_filepath;
 
     emit createdQuestion(question, questionCounter());
     clearQuestionArea();
@@ -142,7 +142,7 @@ void QuestionEditorSubView::next()
     question.weight = m_weightBox->text().toInt();
     question.answers.correctAnswer = m_correctAnswerBox->toPlainText();
     question.answers.uncorrectAnswers = m_incorrectAnswerBox->toPlainText();
-    question.answers.imgPath = m_filepath;
+    question.answers.imgName = m_filepath;
 
     emit createdQuestion(question, questionCounter());
     clearQuestionArea();

@@ -49,7 +49,7 @@ void QuestionsListSubView::setQuestionsLost(const QList<TestQuestions> &list)
                                   + "\nВопрос: " + list.at(i).question + "\n"
                                   + "\nВерные ответы: " + list.at(i).answers.correctAnswer + "\n"
                                   + "\nНеверные ответы: " + list.at(i).answers.uncorrectAnswers + "\n"
-                                  + "\nКартинка: " + list.at(i).answers.imgPath + "\n");
+                                  + "\nКартинка: " + list.at(i).answers.imgName + "\n");
     }
 }
 

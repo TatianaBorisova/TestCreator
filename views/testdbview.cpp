@@ -45,6 +45,8 @@ TestDbView::TestDbView(QWidget *parent) :
 
     m_box->setMargin(minHeight);
 
+    fillChoiceBox(QDir::currentPath());
+
     setLayout(m_box);
 }
 
@@ -73,12 +75,18 @@ void TestDbView::loadFromFolder()
         QStringList allFiles = chosenDir.entryList(QDir::Files | QDir::NoDotAndDotDot);
 
         for (int i = 0; i < allFiles.count(); i++) {
-            if (!findDumlicateFile(m_testBox, allFiles.at(i))) {
 
-                QListWidgetItem *newItem = new QListWidgetItem();
+            QFileInfo fileExt(allFiles.at(i));
+            QString ext = fileExt.suffix().toLower();
 
-                newItem->setText(filePath + allFiles.at(i));
-                m_testBox->insertItem(m_testBox->count(), newItem);
+            if (ext == ".doc" || ext == ".docx" || checkIfSqlliteDb(allFiles.at(i))) {
+                if (!findDumlicateFile(m_testBox, allFiles.at(i))) {
+
+                    QListWidgetItem *newItem = new QListWidgetItem();
+
+                    newItem->setText(filePath + allFiles.at(i));
+                    m_testBox->insertItem(m_testBox->count(), newItem);
+                }
             }
         }
     }
@@ -101,9 +109,10 @@ void TestDbView::openExistedTest()
             if (file.exists()) {
                 QFileInfo fileExt(filename);
                 QString ext = fileExt.suffix();
+
                 if (ext == ".doc" || ext == ".docx") {
                     emit docFileName(filename);
-                } else {
+                } else if (checkIfSqlliteDb(filename)) {
                     emit bdFileName(filename);
                 }
             }
@@ -123,3 +132,46 @@ bool TestDbView::findDumlicateFile(QListWidget *itemBox, const QString &fileName
     return false;
 }
 
+void TestDbView::fillChoiceBox(QString folderPath)
+{
+    if (!folderPath.isEmpty()) {
+
+        if (folderPath.at(folderPath.count() - 1) != '/')
+            folderPath = folderPath + slash;
+
+        m_testBox->clear();
+
+        QDir entryDir(folderPath);
+        if (entryDir.exists()) {
+
+            QStringList filesList = entryDir.entryList(QDir::Files | QDir::NoDotAndDotDot);
+
+            for (int i = 0; i < filesList.count(); i++) {
+
+                QFileInfo fileExt(filesList.at(i));
+                QString ext = fileExt.suffix().toLower();
+
+                if (ext == ".doc" || ext == ".docx" || checkIfSqlliteDb(filesList.at(i))) {
+                    if (!findDumlicateFile(m_testBox, filesList.at(i))) {
+
+                        QListWidgetItem *newItem = new QListWidgetItem();
+
+                        newItem->setText(folderPath + filesList.at(i));
+                        m_testBox->insertItem(m_testBox->count(), newItem);
+                    }
+                }
+            }
+        }
+    }
+}
+
+bool TestDbView::checkIfSqlliteDb(const QString &filename)
+{
+    QFile file(filename);
+    if (file.open(QIODevice::ReadOnly)) {
+        file.seek(0);
+        QByteArray bytes = file.read(16);
+        return QString(bytes.data()).contains("SQLite format");
+    }
+    return false;
+}

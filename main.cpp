@@ -25,7 +25,7 @@ void testDBSaving()
 
         QString filePath = QFileDialog::getOpenFileName(0, "Choose Test Document", "");
 
-        testtest.answers.imgPath = filePath;
+        testtest.answers.imgName = filePath;
         data.questions.append(testtest);
     }
 

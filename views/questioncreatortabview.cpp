@@ -2,6 +2,7 @@
 #include "subviews/questioneditorsubview.h"
 #include "subviews/testeditorsubview.h"
 #include "subviews/questionslistsubview.h"
+#include "subviews/dbtestviewer.h"
 #include "sqldatabase.h"
 #include "docfileprocessing.h"
 
@@ -14,7 +15,8 @@ QuestionCreatorTabView::QuestionCreatorTabView(QWidget *parent) :
     m_testData(new TestEditorSubView(this)),
     m_dbSave(new SqlDBSaver(this)),
     m_docReader(new DocFileProcessing(this)),
-    m_questionsViewer(new QuestionsListSubView(this))
+    m_questionsViewer(new QuestionsListSubView(this)),
+    m_dbViewer(new DbTestViewer(this))
 {
     showSubView(TestEditor);
     connect(m_testData, SIGNAL(showSubView(SubViews)), this, SLOT(showSubView(SubViews)));
@@ -29,6 +31,10 @@ QuestionCreatorTabView::QuestionCreatorTabView(QWidget *parent) :
     connect(this, &QuestionCreatorTabView::updatedIndexData, m_questionEditor, &QuestionEditorSubView::updatedIndexData);
     connect(m_testData, &TestEditorSubView::saveDataInDb, this, &QuestionCreatorTabView::saveDataInDb);
     connect(m_testData, &TestEditorSubView::loadedDocFile, this, &QuestionCreatorTabView::loadDataFromDocFile);
+    connect(m_testData, &TestEditorSubView::loadedDBFile, m_dbSave, &SqlDBSaver::loadDbFile);
+    connect(m_dbSave, &SqlDBSaver::readTests, this, &QuestionCreatorTabView::loadTestList);
+    connect(m_dbSave, &SqlDBSaver::sendFullTestData, this, &QuestionCreatorTabView::loadDataFromDBFile);
+    connect(m_dbViewer, DbTestViewer::chosenTest, m_dbSave, &SqlDBSaver::loadTestDataFromDbFile);
     connect(this, &QuestionCreatorTabView::loadTestData, m_testData, &TestEditorSubView::loadTestFileData);
 }
 
@@ -37,6 +43,7 @@ void QuestionCreatorTabView::resize()
     m_questionEditor->setFixedSize(width(), height());
     m_testData->setFixedSize(width(), height());
     m_questionsViewer->setFixedSize(width(), height());
+    m_dbViewer->setFixedSize(width(), height());
 }
 
 void QuestionCreatorTabView::setFixedSize(int w, int h)
@@ -84,11 +91,21 @@ void QuestionCreatorTabView::showSubView(SubViews view)
         m_questionsViewer->setQuestionsLost(m_data.questions);
         m_questionsViewer->show();
         break;
+    case DbViewer:
+        m_dbViewer->show();
+        break;
     case TestEditor:
     default:
         m_testData->show();
         break;
     }
+}
+
+void QuestionCreatorTabView::loadTestList(const QList<TestHeaderData> &list)
+{
+    if (m_dbViewer)
+        m_dbViewer->fillTestVariants(list);
+    emit showSubView(DbViewer);
 }
 
 void QuestionCreatorTabView::testDbChanged(const QString &dbname)
@@ -161,6 +178,20 @@ void QuestionCreatorTabView::loadDataFromDocFile(const QString &name)
     //printTestData();
 }
 
+void QuestionCreatorTabView::loadDataFromDBFile(const TestData &data)
+{
+    m_data = data;
+
+    //fill test edit view
+    emit loadTestData(m_data);
+
+    //fill first question view
+    if (m_data.questions.count() > 0)
+        emit updatedIndexData(m_data.questions.at(0));
+
+    emit showSubView(TestEditor);
+}
+
 void QuestionCreatorTabView::setLoadedQuestionsCount(int value)
 {
     if (value != m_data.questionCount)
@@ -182,6 +213,6 @@ void QuestionCreatorTabView::printTestData()
         qDebug() << "weight = " << m_data.questions.at(i).weight;
         qDebug() << "correctAnswer = " << m_data.questions.at(i).answers.correctAnswer;
         qDebug() << "uncorrectAnswers = " << m_data.questions.at(i).answers.uncorrectAnswers;
-        qDebug() << "imgPath = " << m_data.questions.at(i).answers.imgPath;
+        qDebug() << "imgPath = " << m_data.questions.at(i).answers.imgName;
     }
 }

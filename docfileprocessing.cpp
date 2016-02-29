@@ -103,7 +103,7 @@ TestData DocFileProcessing::readFromDocFile(const QString &filename, QWidget *pa
             question.weight   = 1;
             question.answers.correctAnswer    = m_answerList.at(i).correctAnswer;
             question.answers.uncorrectAnswers = m_answerList.at(i).uncorrectAnswers;
-            question.answers.imgPath          = m_answerList.at(i).imgPath;
+            question.answers.imgName          = m_answerList.at(i).imgName;
 
             m_loadedData.questions.append(question);
         }
@@ -136,17 +136,17 @@ QString DocFileProcessing::generateJsonTestFile() const
             out << jsonString.arg(StringEncryption::stringEncrypt(m_statementList.at(i), "test"))
                    .arg(StringEncryption::stringEncrypt(m_answerList.at(i).correctAnswer, "test"))
                    .arg(StringEncryption::stringEncrypt(m_answerList.at(i).uncorrectAnswers, "test"))
-                   .arg(StringEncryption::stringEncrypt(m_answerList.at(i).imgPath, "test"));
+                   .arg(StringEncryption::stringEncrypt(m_answerList.at(i).imgName, "test"));
         else
             out << jsonString.arg(StringEncryption::stringEncrypt(m_statementList.at(i), "test"))
                    .arg(StringEncryption::stringEncrypt(m_answerList.at(i).correctAnswer, "test"))
                    .arg(StringEncryption::stringEncrypt(m_answerList.at(i).uncorrectAnswers, "test"))
-                   .arg(StringEncryption::stringEncrypt(m_answerList.at(i).imgPath, "test")) << comma;
+                   .arg(StringEncryption::stringEncrypt(m_answerList.at(i).imgName, "test")) << comma;
 
         //if img exists lets copy it to test directory
-        if (!m_answerList.at(i).imgPath.isEmpty()) {
+        if (!m_answerList.at(i).imgName.isEmpty()) {
 
-            QString imgPath = m_answerList.at(i).imgPath;
+            QString imgPath = m_answerList.at(i).imgName;
             imgPath = imgPath.replace(" ", "");
 
             if (!QFile::copy(QDir::currentPath() + "/" + imgPath, testSubDir + imgPath))
@@ -208,7 +208,7 @@ void DocFileProcessing::fillTestQuestionInfo(QString str)
     Answers answer;
     answer.correctAnswer    = correct;
     answer.uncorrectAnswers = uncorrect;
-    answer.imgPath          = imgstring;
+    answer.imgName          = imgstring;
 
     m_answerList.append(answer);
 }

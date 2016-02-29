@@ -26,6 +26,7 @@ signals:
     void questionCountChanged(int value);
     void saveDataInDb();
     void loadedDocFile(const QString &filename);
+    void loadedDBFile(const QString &filename);
     void questionCountLoadedFromFile(int value);
 
 public slots:
@@ -37,6 +38,7 @@ protected:
 private slots:
     void addQuestions();
     void loadDocFile();
+    void loadDBFile();
     void showQuestionsListView();
 
 private:
@@ -49,6 +51,7 @@ private:
     QLineEdit *m_questionCountBox;
     QPushButton *m_addQuestions;
     QPushButton *m_loadFromDoc;
+    QPushButton *m_loadFromDb;
     QPushButton *m_saveinDb;
     QPushButton *m_questionView;
 };
