@@ -8,6 +8,7 @@ class QLineEdit;
 class QPushButton;
 class QGridLayout;
 class QTimeEdit;
+class QTextEdit;
 
 class TestEditorSubView : public TestCreatorBaseView
 {
@@ -46,7 +47,7 @@ private:
     QLabel *m_testName;
     QLabel *m_testTime;
     QLabel *m_questionCount;
-    QLineEdit *m_testNameBox;
+    QTextEdit *m_testNameBox;
     QTimeEdit *m_testTimeBox;
     QLineEdit *m_questionCountBox;
     QPushButton *m_addQuestions;

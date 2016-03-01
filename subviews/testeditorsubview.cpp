@@ -8,6 +8,7 @@
 #include <QTimeEdit>
 #include <QMessageBox>
 #include <QFileDialog>
+#include <QTextEdit>
 
 namespace {
 const int elHeight = 50;
@@ -20,7 +21,7 @@ TestEditorSubView::TestEditorSubView(QWidget *parent) :
     m_testName(new QLabel("Название теста", this)),
     m_testTime(new QLabel("Время выполнения теста", this)),
     m_questionCount(new QLabel("Количество вопросов", this)),
-    m_testNameBox(new QLineEdit(this)),
+    m_testNameBox(new QTextEdit(this)),
     m_testTimeBox(new QTimeEdit(this)),
     m_questionCountBox(new QLineEdit(this)),
     m_addQuestions(new QPushButton("Редактировать вопросы", this)),
@@ -30,7 +31,7 @@ TestEditorSubView::TestEditorSubView(QWidget *parent) :
     m_questionView(new QPushButton("Просмотреть вопросы", this))
 {
     connect(m_addQuestions, &QPushButton::clicked, this, &TestEditorSubView::addQuestions);
-    connect(m_testNameBox, &QLineEdit::editingFinished, this, &TestEditorSubView::setTestName);
+    connect(m_testNameBox, &QTextEdit::textChanged, this, &TestEditorSubView::setTestName);
     connect(m_testTimeBox, &QTimeEdit::editingFinished, this, &TestEditorSubView::setTestTime);
     connect(m_questionCountBox, &QLineEdit::editingFinished, this, &TestEditorSubView::setQuestionCount);
     connect(m_saveinDb, &QPushButton::clicked, this, &TestEditorSubView::saveDataInDb);
@@ -118,7 +119,7 @@ void TestEditorSubView::loadDBFile()
 
 void TestEditorSubView::setTestName()
 {
-    emit testNameChanged(m_testNameBox->text());
+    emit testNameChanged(m_testNameBox->toPlainText());
 }
 
 void TestEditorSubView::setTestTime()

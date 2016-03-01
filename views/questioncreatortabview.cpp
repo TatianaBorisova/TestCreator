@@ -34,7 +34,7 @@ QuestionCreatorTabView::QuestionCreatorTabView(QWidget *parent) :
     connect(m_testData, &TestEditorSubView::loadedDBFile, m_dbSave, &SqlDBSaver::loadDbFile);
     connect(m_dbSave, &SqlDBSaver::readTests, this, &QuestionCreatorTabView::loadTestList);
     connect(m_dbSave, &SqlDBSaver::sendFullTestData, this, &QuestionCreatorTabView::loadDataFromDBFile);
-    connect(m_dbViewer, DbTestViewer::chosenTest, m_dbSave, &SqlDBSaver::loadTestDataFromDbFile);
+    connect(m_dbViewer, &DbTestViewer::chosenTest, m_dbSave, &SqlDBSaver::loadTestDataFromDbFile);
     connect(this, &QuestionCreatorTabView::loadTestData, m_testData, &TestEditorSubView::loadTestFileData);
 }
 

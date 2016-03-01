@@ -36,10 +36,10 @@ void MainWindowTab::resize()
         setFixedSize(wParent->width(), wParent->height());
     }
 
-    m_creatorPage->setFixedSize(width()*0.9, height()*0.9);
-    m_settingsPage->setFixedSize(width()*0.9, height()*0.9);
-    m_createdTestPage->setFixedSize(width()*0.9, height()*0.9);
-    m_testResultPage->setFixedSize(width()*0.9, height()*0.9);
+    m_creatorPage->setFixedSize(width()*0.98, height()*0.9);
+    m_settingsPage->setFixedSize(width()*0.98, height()*0.9);
+    m_createdTestPage->setFixedSize(width()*0.98, height()*0.9);
+    m_testResultPage->setFixedSize(width()*0.98, height()*0.9);
 }
 
 void MainWindowTab::setCurrentTabView(TestViews view)

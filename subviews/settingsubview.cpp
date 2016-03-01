@@ -7,6 +7,7 @@
 #include <QLineEdit>
 #include <QFileDialog>
 #include <QPlainTextEdit>
+#include <QDir>
 
 namespace {
 const int btnWidth = 200;
@@ -59,8 +60,8 @@ SettingSubView::SettingSubView(QWidget *parent) :
     m_localhost->setText(QString("IP: %1").arg(m_server->serverIp()));
     m_port->setText(QString("PORT: %1").arg(QString::number(m_server->serverPort())));
 
-    m_testBox->setPlainText("testDb");
-    m_resultBox->setPlainText("resultDb");
+    m_testBox->setPlainText(QDir::current().absolutePath() + QString("/testDb"));
+    m_resultBox->setPlainText(QDir::current().absolutePath() + QString("/resultDb"));
 
     m_rowBox->addWidget(m_localhost);
     m_rowBox->addWidget(m_port);
@@ -76,6 +77,9 @@ SettingSubView::SettingSubView(QWidget *parent) :
     m_grid->addWidget(m_chooseResDb, 3, 1);
 
     this->setLayout(m_grid);
+
+    emit testDbChanged(m_testBox->toPlainText());
+    emit resultDbChanged(m_resultBox->toPlainText());
 }
 
 void SettingSubView::chooseTestDB()
