@@ -25,6 +25,7 @@ public slots:
     void stopServer();
 
 signals:
+    void serverStarted();
     void closeClientConnection();
 
 protected:

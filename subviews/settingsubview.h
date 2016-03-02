@@ -36,12 +36,15 @@ protected:
 private slots:
     void chooseTestDB();
     void chooseResDB();
+    void setStartSetverState();
+    void setStopSetverState();
 
 private:
     QGridLayout *m_grid;
     TcpServer   *m_server;
     QLabel      *m_localhost;
     QLineEdit   *m_port;
+    QLabel      *m_serverStatus;
     QPlainTextEdit   *m_testBox;
     QPlainTextEdit   *m_resultBox;
     QPushButton *m_startBtn;

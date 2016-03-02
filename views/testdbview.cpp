@@ -31,10 +31,6 @@ TestDbView::TestDbView(QWidget *parent) :
     QFont wdgFont("Times", 11);
     m_testBox->setFont(wdgFont);
 
-    m_openTestFile->setFixedSize(btnWidth, 50);
-    m_createTestFile->setFixedSize(btnWidth, 50);
-    m_folderContainer->setFixedSize(btnWidth, 50);
-
     m_vbox->addWidget(m_folderContainer);
     m_vbox->addWidget(m_openTestFile);
     m_vbox->addWidget(m_createTestFile);

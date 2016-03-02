@@ -20,6 +20,7 @@ SettingSubView::SettingSubView(QWidget *parent) :
     m_server(new TcpServer(this)),
     m_localhost(new QLabel(this)),
     m_port(new QLineEdit(this)),
+    m_serverStatus(new QLabel(this)),
     m_testBox(new QPlainTextEdit(this)),
     m_resultBox(new QPlainTextEdit(this)),
     m_startBtn(new QPushButton(this)),
@@ -30,27 +31,19 @@ SettingSubView::SettingSubView(QWidget *parent) :
 {
     setFixedSize(500, 300);
 
-    //tbd resolve stylesheets problem
-    //this->setStyleSheet("QPushButton { min-height: 50px; }");
-    //this->setStyleSheet("QPlainTextEdit { min-height: 50px; }");
-    //this->setStyleSheet("QLineEdit { min-height: 50px; }");
-
     connect(m_startBtn, &QPushButton::clicked, this, &SettingSubView::startServer);
     connect(m_stopBtn,  &QPushButton::clicked, m_server, &TcpServer::stopServer);
     connect(m_chooseTestDb,  &QPushButton::clicked, this, &SettingSubView::chooseTestDB);
     connect(m_chooseResDb,  &QPushButton::clicked, this, &SettingSubView::chooseResDB);
-
-    m_startBtn->setFixedHeight(btnHeight);
-    m_stopBtn->setFixedHeight(btnHeight);
-    m_localhost->setFixedHeight(btnHeight);
-    m_port->setFixedHeight(btnHeight);
-    m_testBox->setFixedHeight(btnHeight);
-    m_resultBox->setFixedHeight(btnHeight);
-    m_chooseTestDb->setFixedHeight(btnHeight);
-    m_chooseResDb->setFixedHeight(btnHeight);
+    connect(m_server, &TcpServer::serverStarted, this, &SettingSubView::setStartSetverState);
+    connect(m_server, &TcpServer::closeClientConnection, this, &SettingSubView::setStopSetverState);
 
     m_testBox->setReadOnly(true);
     m_resultBox->setReadOnly(true);
+
+    m_testBox->setFixedHeight(btnHeight);
+    m_resultBox->setFixedHeight(btnHeight);
+    m_port->setFixedWidth(btnWidth);
 
     m_startBtn->setText("Запустить сервер");
     m_stopBtn->setText("Остановить сервер");
@@ -58,7 +51,7 @@ SettingSubView::SettingSubView(QWidget *parent) :
     m_chooseResDb->setText("Выбрать базу результатов");
 
     m_localhost->setText(QString("IP: %1").arg(m_server->serverIp()));
-    m_port->setText(QString("PORT: %1").arg(QString::number(m_server->serverPort())));
+    m_port->setText(QString("%1").arg(QString::number(m_server->serverPort())));
 
     m_testBox->setPlainText(QDir::current().absolutePath() + QString("/testDb"));
     m_resultBox->setPlainText(QDir::current().absolutePath() + QString("/resultDb"));
@@ -70,6 +63,7 @@ SettingSubView::SettingSubView(QWidget *parent) :
     m_grid->addLayout(m_rowBox, 0, 0);
     m_grid->addWidget(m_startBtn, 0, 1);
     m_grid->addWidget(m_stopBtn, 1, 1);
+    m_grid->addWidget(m_serverStatus, 1, 0);
 
     m_grid->addWidget(m_testBox, 2, 0);
     m_grid->addWidget(m_resultBox, 3, 0);
@@ -80,6 +74,7 @@ SettingSubView::SettingSubView(QWidget *parent) :
 
     emit testDbChanged(m_testBox->toPlainText());
     emit resultDbChanged(m_resultBox->toPlainText());
+    setStopSetverState();
 }
 
 void SettingSubView::chooseTestDB()
@@ -96,6 +91,17 @@ void SettingSubView::chooseResDB()
     emit resultDbChanged(filePath);
 }
 
+void SettingSubView::setStartSetverState()
+{
+    m_serverStatus->setText("Сервер запущен");
+    m_localhost->setText(QString("IP: %1").arg(m_server->serverIp()));
+}
+
+void SettingSubView::setStopSetverState()
+{
+    m_serverStatus->setText("Сервер остановлен");
+}
+
 QString SettingSubView::testDb() const
 {
     m_testBox->toPlainText();
@@ -108,6 +114,7 @@ QString SettingSubView::resultDb() const
 
 void SettingSubView::startServer()
 {
+    qDebug() << m_port->text().toInt() << " ** " << m_port->text();
     m_server->setPort(m_port->text().toInt());
     m_server->startServer();
 }

@@ -11,7 +11,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QWidget(parent),
     m_wnd(new MainWindowTab(this))
 {
-    setFixedSize(getScreenGeometry().width()*0.9, getScreenGeometry().height()*0.9);
+    setFixedSize(getScreenGeometry().width()*0.98, getScreenGeometry().height()*0.9);
 
     connect(m_wnd, &MainWindowTab::showView, this, &MainWindow::showMainView);
 

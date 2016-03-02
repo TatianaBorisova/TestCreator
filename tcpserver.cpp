@@ -9,6 +9,9 @@
 #include <QDateTime>
 #include <QDebug>
 
+#include <QHostInfo>
+#include <QNetworkInterface>
+
 namespace {
 const int port = 33333;
 }
@@ -17,7 +20,7 @@ TcpServer::TcpServer(QObject *parent) :
     QTcpServer(parent),
     m_listeningPort(port)
 {
-    // startServer();
+
 }
 
 void TcpServer::startServer()
@@ -25,7 +28,17 @@ void TcpServer::startServer()
     if (!this->listen(QHostAddress::Any, m_listeningPort)) {
         QMessageBox::warning(0, "Error", QString("Unable to start the server: %1.").arg(this->errorString()));
     } else {
-        qDebug() << QString::fromUtf8("Сервер запущен!");
+        QList<QHostAddress> ipAddressesList = QNetworkInterface::allAddresses();
+
+        // use the first non-localhost IPv4 address
+        for (int i = 0; i < ipAddressesList.size(); ++i) {
+            if (ipAddressesList.at(i) != QHostAddress::LocalHost && ipAddressesList.at(i).toIPv4Address()) {
+                m_listeningIp = ipAddressesList.at(i).toString();
+                qDebug() << "host = "<< this->serverIp() << this->serverPort();
+                break;
+            }
+        }
+        emit serverStarted();
     }
 }
 
@@ -66,7 +79,5 @@ void TcpServer::incomingConnection(qintptr socketDescriptor)
 void TcpServer::stopServer()
 {
     emit closeClientConnection();
-
     this->close();
-    QMessageBox::warning(0, "Error", "Сервер остановлен!");
 }

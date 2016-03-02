@@ -16,6 +16,12 @@ MainWindowTab::MainWindowTab(QWidget *parent) :
     m_createdTestPage(new TestDbView(this)),
     m_testResultPage(new ResultDbView(this))
 {
+    this->setStyleSheet("QPushButton { height: 45px; }"
+                        "QTextEdit { height: 45px; }"
+                        "QTimeEdit { height: 45px; }"
+                        "QLineEdit { height: 45px; }"
+                        "QPlainTextEdit { height: 45px; }");
+
     connect(m_createdTestPage, &TestDbView::showView, this, &MainWindowTab::showView);
     connect(m_createdTestPage, &TestDbView::docFileName, m_creatorPage, &QuestionCreatorTabView::loadDataFromDocFile);
     connect(m_settingsPage, &SettingsTabView::testDbChanged, m_creatorPage, &QuestionCreatorTabView::testDbChanged);

@@ -10,11 +10,6 @@
 #include <QFileDialog>
 #include <QTextEdit>
 
-namespace {
-const int elHeight = 50;
-const int elWidth = 300;
-}
-
 TestEditorSubView::TestEditorSubView(QWidget *parent) :
     TestCreatorBaseView(parent),
     m_box(new QGridLayout(this)),
@@ -25,8 +20,8 @@ TestEditorSubView::TestEditorSubView(QWidget *parent) :
     m_testTimeBox(new QTimeEdit(this)),
     m_questionCountBox(new QLineEdit(this)),
     m_addQuestions(new QPushButton("Редактировать вопросы", this)),
-    m_loadFromDoc(new QPushButton("Загрузить тест из Doc файла", this)),
-    m_loadFromDb(new QPushButton("Загрузить тест из БД", this)),
+    m_loadFromDoc(new QPushButton("Загрузить из Doc", this)),
+    m_loadFromDb(new QPushButton("Загрузить из БД", this)),
     m_saveinDb(new QPushButton("Сохранить в БД", this)),
     m_questionView(new QPushButton("Просмотреть вопросы", this))
 {
@@ -39,20 +34,8 @@ TestEditorSubView::TestEditorSubView(QWidget *parent) :
     connect(m_loadFromDb, &QPushButton::clicked, this, &TestEditorSubView::loadDBFile);
     connect(m_questionView, &QPushButton::clicked, this, &TestEditorSubView::showQuestionsListView);
 
-    m_testName->setFixedHeight(elHeight);
-    m_testTime->setFixedHeight(elHeight);
-    m_questionCount->setFixedHeight(elHeight);
-    m_testNameBox->setFixedHeight(elHeight);
-    m_testTimeBox->setFixedHeight(elHeight);
-    m_questionCountBox->setFixedHeight(elHeight);
-    m_addQuestions->setFixedSize(elWidth, elHeight);
-    m_loadFromDoc->setFixedHeight(elHeight);
-    m_saveinDb->setFixedHeight(elHeight);
-    m_questionView->setFixedSize(elWidth, elHeight);
-    m_loadFromDb->setFixedHeight(elHeight);
-
+    m_testNameBox->setFixedHeight(50);
     m_questionCountBox->setValidator(new QRegExpValidator(QRegExp("\\d+"), this));
-
     m_box->setSpacing(20);
 
     m_box->addWidget(m_testName,      0, 0);
