@@ -37,6 +37,7 @@ SettingSubView::SettingSubView(QWidget *parent) :
     connect(m_chooseResDb,  &QPushButton::clicked, this, &SettingSubView::chooseResDB);
     connect(m_server, &TcpServer::serverStarted, this, &SettingSubView::setStartSetverState);
     connect(m_server, &TcpServer::closeClientConnection, this, &SettingSubView::setStopSetverState);
+    connect(this, &SettingSubView::resultDbChanged, m_server, &TcpServer::resultDbName);
 
     m_testBox->setReadOnly(true);
     m_resultBox->setReadOnly(true);
@@ -114,7 +115,6 @@ QString SettingSubView::resultDb() const
 
 void SettingSubView::startServer()
 {
-    qDebug() << m_port->text().toInt() << " ** " << m_port->text();
     m_server->setPort(m_port->text().toInt());
     m_server->startServer();
 }

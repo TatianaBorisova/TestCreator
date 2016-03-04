@@ -27,14 +27,19 @@ public slots:
 signals:
     void serverStarted();
     void closeClientConnection();
+    void resultDbName(const QString &name);
 
 protected:
     void incomingConnection(qintptr socketDescriptor);
+
+private slots:
+    void saveResultDbName(const QString &name);
 
 private:
     QMap<int, ClientInfoSaver*> m_clients;
     int                         m_listeningPort;
     QString                     m_listeningIp;
+    QString                     m_resultDb;
 };
 
 #endif // TCPSERVER_H

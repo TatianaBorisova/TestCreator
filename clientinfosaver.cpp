@@ -2,6 +2,7 @@
 #include "sqldatabase.h"
 
 #include <QDataStream>
+#include <QDebug>
 
 ClientInfoSaver::ClientInfoSaver(qintptr id, QObject *parent) :
     QThread(parent),
@@ -9,7 +10,7 @@ ClientInfoSaver::ClientInfoSaver(qintptr id, QObject *parent) :
 {
     qRegisterMetaType<StudentResult>("StudentResult");
 
-    // connect(this, &ClientInfoSaver::saveResultToDataBase, m_db, &SqlDBSaver::saveStudentResultToDb);
+    connect(this, &ClientInfoSaver::saveResultToDataBase, m_db, &SqlDBSaver::saveStudentResultToDb);
     this->m_socketDescriptor = id;
 }
 
@@ -63,7 +64,7 @@ void ClientInfoSaver::readyRead()
                  << clientParcedData.group
                  << clientParcedData.score;
 
-        emit saveResultToDataBase(clientParcedData);
+        emit saveResultToDataBase(m_resultDbName, clientParcedData);
     }
 }
 
@@ -87,4 +88,9 @@ void ClientInfoSaver::disconnected()
 
     m_socket->deleteLater();
     exit(0);
+}
+
+void ClientInfoSaver::saveDbName(const QString &db)
+{
+    m_resultDbName = db;
 }

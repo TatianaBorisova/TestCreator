@@ -19,34 +19,46 @@ SqlDBSaver::SqlDBSaver(QObject *parent) :
 {
 }
 
-void SqlDBSaver::saveStudentResultToDb(const QString &dbName, const QString &tableName, const StudentResult &result)
+void SqlDBSaver::saveStudentResultToDb(const QString &db, const StudentResult &result)
 {
+    if (db.isEmpty()) {
+        QMessageBox::critical(0, "Can not open database", "Введите имя базы данных на вкладке настройки.");
+        return;
+    }
+
+    //create db if it doesn't exist
+    createResultTable(db);
+
     QSqlDatabase dbPtr = QSqlDatabase::addDatabase("QSQLITE");
-    dbPtr.setDatabaseName(dbName);
+    dbPtr.setDatabaseName(db);
     if (!dbPtr.open()) {
-        QMessageBox::critical(0, "Can not open database", "Не могу открыть базу данных.\n");
+        QMessageBox::critical(0, "Can not open database", "Не могу открыть базу данных.");
         return;
     }
 
     // populate with some data
     QSqlQuery q_insert(dbPtr);
-    q_insert.prepare("INSERT INTO "
-                     + tableName
-                     + " (firstname, secondName, surname, groupname, scorevalue, testdate)"
-                     + " VALUES ( :firstname, :secondName, :surname, :groupname, :scorevalue, :testdate)");
+    q_insert.prepare("INSERT INTO studentresults (firstname, secondName, surname, groupname, scorevalue, testtime) VALUES ( :firstname, :secondName, :surname, :groupname, :scorevalue, :testtime)");
 
-    q_insert.bindValue(":firstname", result.firstName);
+    q_insert.bindValue(":firstname",  result.firstName);
     q_insert.bindValue(":secondName", result.secondName);
-    q_insert.bindValue(":surname", result.surname);
-    q_insert.bindValue(":groupname", result.group);
+    q_insert.bindValue(":surname",    result.surname);
+    q_insert.bindValue(":groupname",  result.group);
     q_insert.bindValue(":scorevalue", result.score);
-    q_insert.bindValue(":testdate", QDateTime::currentDateTime());
+    q_insert.bindValue(":testtime",   QDateTime::currentDateTime());
 
-    qDebug() << "insert data row: " << q_insert.exec();
+    qDebug() << "insert data row: " << q_insert.exec() << q_insert.lastError();
+
+    dbPtr.close();
 }
 
 void SqlDBSaver::saveTestToDb(const QString &dbName, const TestData &result)
 {
+    if (dbName.isEmpty()) {
+        QMessageBox::critical(0, "Can not open database", "Введите имя базы данных на вкладке настройки.");
+        return;
+    }
+
     QSqlDatabase dbPtr = QSqlDatabase::addDatabase("QSQLITE");
     dbPtr.setDatabaseName(dbName);
     if (!dbPtr.open()) {
@@ -140,6 +152,10 @@ void SqlDBSaver::saveTestToDb(const QString &dbName, const TestData &result)
 
 void SqlDBSaver::createTestTables(const QString &dbName)
 {
+    if (dbName.isEmpty()) {
+        QMessageBox::critical(0, "Can not open database", "Введите имя базы данных на вкладке настройки.");
+        return;
+    }
 
     QSqlDatabase dbPtr = QSqlDatabase::addDatabase("QSQLITE");
 
@@ -163,9 +179,24 @@ void SqlDBSaver::createTestTables(const QString &dbName)
     }
 }
 
-void SqlDBSaver::createResultTable(const QString &dbName, const QString &tableName)
+void SqlDBSaver::createResultTable(const QString &dbName)
 {
+    if (dbName.isEmpty()) {
+        QMessageBox::critical(0, "Can not open database", "Введите имя базы данных на вкладке настройки.");
+        return;
+    }
 
+    QSqlDatabase dbPtr = QSqlDatabase::addDatabase("QSQLITE");
+    dbPtr.setDatabaseName(dbName);
+    if (!dbPtr.open()) {
+        QMessageBox::critical(0, "Can not open database", "Не могу открыть " + dbName + " базу данных.\n");
+        return;
+    }
+
+    QSqlQuery q_testcreate = dbPtr.exec("CREATE TABLE studentresults (id integer primary key autoincrement, firstname varchar(255), secondName varchar(255), surname varchar(255), groupname varchar(255), scorevalue int, testtime datetime)");
+    qDebug() << "create: " << q_testcreate.lastError();
+
+    dbPtr.close();
 }
 
 void SqlDBSaver::loadTestDataFromDbFile(const QString &testName)
@@ -173,7 +204,12 @@ void SqlDBSaver::loadTestDataFromDbFile(const QString &testName)
     TestData data;
     QSqlDatabase dbPtr = QSqlDatabase::addDatabase("QSQLITE");
 
-    dbPtr.setDatabaseName(m_db);
+    if (m_testsdb.isEmpty()) {
+        QMessageBox::critical(0, "Can not open database", "Введите имя базы данных на вкладке настройки.");
+        return;
+    }
+
+    dbPtr.setDatabaseName(m_testsdb);
     if (!dbPtr.open()) {
         QMessageBox::critical(0, "Can not open database", "Не могу открыть базу данных.\n");
         return;
@@ -214,6 +250,11 @@ void SqlDBSaver::loadTestDataFromDbFile(const QString &testName)
 
 void SqlDBSaver::loadDbFile(const QString &filename)
 {
+    if (filename.isEmpty()) {
+        QMessageBox::critical(0, "Can not open database", "Введите имя базы данных на вкладке настройки.");
+        return;
+    }
+
     QSqlDatabase dbPtr = QSqlDatabase::addDatabase("QSQLITE");
     dbPtr.setDatabaseName(filename);
     if (!dbPtr.open()) {
@@ -221,7 +262,7 @@ void SqlDBSaver::loadDbFile(const QString &filename)
         return;
     }
 
-    m_db = filename;
+    m_testsdb = filename;
     QList<TestHeaderData> list;
 
     //firstly lets check if test name already exists and delete it and all data connected with it

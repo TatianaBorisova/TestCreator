@@ -11,6 +11,7 @@ class QSqlDatabase;
 class SqlDBSaver : public QObject
 {
     Q_OBJECT
+
 public:
     explicit SqlDBSaver(QObject *parent = 0);
 
@@ -20,15 +21,15 @@ signals:
 
 public slots:
     void createTestTables(const QString &dbName);
-    void createResultTable(const QString &dbName, const QString &tableName);
-    void saveStudentResultToDb(const QString &dbName, const QString &tableName, const StudentResult &result);
+    void createResultTable(const QString &dbName);
+    void saveStudentResultToDb(const QString &db, const StudentResult &result);
     void saveTestToDb(const QString &dbName, const TestData &result);
 
     void loadDbFile(const QString &filename);
     void loadTestDataFromDbFile(const QString &testName);
 
 private:
-    QString m_db;
+    QString m_testsdb;
 };
 
 #endif // SQLDATABASE_H

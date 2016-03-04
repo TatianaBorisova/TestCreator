@@ -20,7 +20,7 @@ TcpServer::TcpServer(QObject *parent) :
     QTcpServer(parent),
     m_listeningPort(port)
 {
-
+    connect(this, &TcpServer::resultDbName, this, &TcpServer::saveResultDbName);
 }
 
 void TcpServer::startServer()
@@ -63,6 +63,7 @@ void TcpServer::incomingConnection(qintptr socketDescriptor)
     qDebug() << socketDescriptor << " Connecting...";
 
     ClientInfoSaver *thread = new ClientInfoSaver(socketDescriptor, this);
+    thread->saveDbName(m_resultDb);
 
     if (m_clients.count() > 0) {
         m_clients.insert(m_clients.count(), thread);
@@ -70,6 +71,7 @@ void TcpServer::incomingConnection(qintptr socketDescriptor)
         m_clients.insert(0, thread);
     }
 
+    connect(this, &TcpServer::resultDbName, thread, &ClientInfoSaver::saveDbName, Qt::QueuedConnection);
     connect(thread, SIGNAL(finished()), thread, SLOT(deleteLater()));
     connect(this, SIGNAL(closeClientConnection()), thread, SLOT(disconnected()));
 
@@ -80,4 +82,9 @@ void TcpServer::stopServer()
 {
     emit closeClientConnection();
     this->close();
+}
+
+void TcpServer::saveResultDbName(const QString &name)
+{
+    m_resultDb = name;
 }
