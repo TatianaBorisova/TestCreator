@@ -24,7 +24,9 @@ QuestionsListSubView::QuestionsListSubView(QWidget *parent) :
 
     m_box->setAlignment(m_questions, Qt::AlignBottom);
     m_box->setAlignment(m_back, Qt::AlignBottom);
-    m_box->setMargin(10);
+
+    m_box->setMargin(30);
+    m_box->setSpacing(30);
 
     setLayout(m_box);
 }

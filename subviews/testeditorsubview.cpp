@@ -51,6 +51,9 @@ TestEditorSubView::TestEditorSubView(QWidget *parent) :
     m_box->addWidget(m_addQuestions,     2, 2);
     m_box->addWidget(m_questionView,     2, 3);
 
+    m_box->setMargin(30);
+    m_box->setSpacing(30);
+
     setLayout(m_box);
 }
 

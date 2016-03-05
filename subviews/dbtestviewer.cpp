@@ -18,6 +18,9 @@ DbTestViewer::DbTestViewer(QWidget *parent) :
     m_hbox->addWidget(m_dbTests);
     m_hbox->addWidget(m_btn);
 
+    m_hbox->setMargin(30);
+    m_hbox->setSpacing(30);
+
     setLayout(m_hbox);
 }
 

@@ -38,45 +38,69 @@ void ClientInfoSaver::run()
 
 void ClientInfoSaver::readyRead()
 {
-    if (m_socket) {
-        QByteArray clientData = m_socket->readAll();
-        QDataStream clientDataStream(&clientData, QIODevice::ReadOnly);
+    qDebug() << "Client ready to read" << m_socket->bytesAvailable() << "bytes.";
+    while(m_socket->bytesAvailable())
+    {
+        if (m_socket->bytesAvailable() >= headerMsgSize) {
 
-        //read header mag
-        char *headerBuffer = new char[headerMsgSize];
-        clientDataStream.readRawData(headerBuffer, headerMsgSize);
+            QByteArray buffer = m_socket->read(headerMsgSize);
+            QByteArray newarray;
 
-        //convert to int
-        QString msgSize = QString(headerBuffer);
-        int msgSizeNumber = msgSize.toInt();
+            for (int i = 0; i < buffer.size(); i++) {
+                if (buffer.at(i) == '\0')
+                    continue;
 
-        //read using sum of data
-        char *dataBuffer = new char[msgSizeNumber - headerMsgSize];
-        clientDataStream.readRawData(dataBuffer, msgSizeNumber - headerMsgSize);
+                newarray.append(buffer.at(i));
+            }
 
-        QString fullMsg = QString(dataBuffer);
-        QStringList dataList = fullMsg.split(";");
+            int msgSize = QString(newarray.toStdString().c_str()).toInt();
+            buffer.clear();
+            newarray.clear();
 
-        StudentResult clientParcedData = fillResultStructure(dataList);
-        qDebug() << clientParcedData.firstName
-                 << clientParcedData.secondName
-                 << clientParcedData.surname
-                 << clientParcedData.group
-                 << clientParcedData.score;
+            buffer = m_socket->read(msgSize);
 
-        emit saveResultToDataBase(m_resultDbName, clientParcedData);
+            while(buffer.size() < msgSize - headerMsgSize)
+            {
+                m_socket->waitForReadyRead(3000);
+                buffer.append(m_socket->read(msgSize - buffer.size()));
+            }
+
+            for (int i = 0; i < buffer.size(); i++) {
+                if (buffer.at(i) == '\0')
+                    continue;
+
+                newarray.append(buffer.at(i));
+            }
+
+            QString fullMsg(newarray.toStdString().c_str());
+            QStringList dataList = fullMsg.split(";");
+            StudentResult clientParcedData = fillResultStructure(dataList);
+
+            qDebug() << clientParcedData.testName
+                     << clientParcedData.firstName
+                     << clientParcedData.secondName
+                     << clientParcedData.surname
+                     << clientParcedData.group
+                     << clientParcedData.score
+                     << clientParcedData.maxPosibleScore;
+
+            emit saveResultToDataBase(m_resultDbName, clientParcedData);
+        }
     }
 }
 
 StudentResult ClientInfoSaver::fillResultStructure(const QStringList &dataList) const
 {
     StudentResult result;
-    if (dataList.count() >= 5) {
-        result.firstName  = dataList.at(0);
-        result.secondName = dataList.at(1);
-        result.surname    = dataList.at(2);
-        result.group      = dataList.at(3);
-        result.score      = dataList.at(4).toInt();
+    qDebug() << "count = " << dataList.count();
+    if (dataList.count() >= 7) {
+        result.testName        = dataList.at(0);
+        result.firstName       = dataList.at(1);
+        result.secondName      = dataList.at(2);
+        result.surname         = dataList.at(3);
+        result.group           = dataList.at(4);
+        result.score           = dataList.at(5).toInt();
+        result.maxPosibleScore = dataList.at(6).toInt();
     }
 
     return result;

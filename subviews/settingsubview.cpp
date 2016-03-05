@@ -71,6 +71,9 @@ SettingSubView::SettingSubView(QWidget *parent) :
     m_grid->addWidget(m_chooseTestDb, 2, 1);
     m_grid->addWidget(m_chooseResDb, 3, 1);
 
+    m_grid->setMargin(30);
+    m_grid->setSpacing(30);
+
     this->setLayout(m_grid);
 
     emit testDbChanged(m_testBox->toPlainText());

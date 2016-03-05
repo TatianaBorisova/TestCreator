@@ -68,6 +68,9 @@ QuestionEditorSubView::QuestionEditorSubView(QWidget *parent) :
     m_box->setAlignment(m_question, Qt::AlignBottom);
     m_box->setAlignment(m_weight, Qt::AlignBottom);
 
+    m_box->setMargin(30);
+    m_box->setSpacing(30);
+
     setLayout(m_box);
 }
 

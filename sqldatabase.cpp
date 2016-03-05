@@ -36,18 +36,34 @@ void SqlDBSaver::saveStudentResultToDb(const QString &db, const StudentResult &r
         return;
     }
 
-    // populate with some data
-    QSqlQuery q_insert(dbPtr);
-    q_insert.prepare("INSERT INTO studentresults (firstname, secondName, surname, groupname, scorevalue, testtime) VALUES ( :firstname, :secondName, :surname, :groupname, :scorevalue, :testtime)");
+    QSqlQuery q_select(dbPtr);
+    q_select.prepare("SELECT id FROM studentresults WHERE testname=:testname AND firstname=:firstname AND secondName=:secondName AND surname=:surname AND groupname=:groupname");
+    q_select.bindValue(":testname", result.testName);
+    q_select.bindValue(":firstname", result.firstName);
+    q_select.bindValue(":secondName", result.secondName);
+    q_select.bindValue(":surname", result.surname);
+    q_select.bindValue(":groupname", result.group);
 
-    q_insert.bindValue(":firstname",  result.firstName);
-    q_insert.bindValue(":secondName", result.secondName);
-    q_insert.bindValue(":surname",    result.surname);
-    q_insert.bindValue(":groupname",  result.group);
-    q_insert.bindValue(":scorevalue", result.score);
-    q_insert.bindValue(":testtime",   QDateTime::currentDateTime());
+    if (q_select.exec()) {
+        if (q_select.next()) {
+            dbPtr.close();
+            return;
+        }
+        // populate with some data
+        QSqlQuery q_insert(dbPtr);
+        q_insert.prepare("INSERT INTO studentresults (testname, firstname, secondName, surname, groupname, scorevalue, maxvalue, testtime) VALUES ( :testname, :firstname, :secondName, :surname, :groupname, :scorevalue, :maxvalue, :testtime)");
 
-    qDebug() << "insert data row: " << q_insert.exec() << q_insert.lastError();
+        q_insert.bindValue(":testname",   result.testName);
+        q_insert.bindValue(":firstname",  result.firstName);
+        q_insert.bindValue(":secondName", result.secondName);
+        q_insert.bindValue(":surname",    result.surname);
+        q_insert.bindValue(":groupname",  result.group);
+        q_insert.bindValue(":scorevalue", result.score);
+        q_insert.bindValue(":maxvalue",   result.maxPosibleScore);
+        q_insert.bindValue(":testtime",   QDateTime::currentDateTime());
+
+        qDebug() << "insert data row: " << q_insert.exec() << q_insert.lastError();
+    }
 
     dbPtr.close();
 }
@@ -193,7 +209,7 @@ void SqlDBSaver::createResultTable(const QString &dbName)
         return;
     }
 
-    QSqlQuery q_testcreate = dbPtr.exec("CREATE TABLE studentresults (id integer primary key autoincrement, firstname varchar(255), secondName varchar(255), surname varchar(255), groupname varchar(255), scorevalue int, testtime datetime)");
+    QSqlQuery q_testcreate = dbPtr.exec("CREATE TABLE studentresults (id integer primary key autoincrement, testname varchar(255), firstname varchar(255), secondName varchar(255), surname varchar(255), groupname varchar(255), scorevalue int, maxvalue int, testtime datetime)");
     qDebug() << "create: " << q_testcreate.lastError();
 
     dbPtr.close();
