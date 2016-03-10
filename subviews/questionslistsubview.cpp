@@ -33,7 +33,7 @@ QuestionsListSubView::QuestionsListSubView(QWidget *parent) :
 
 void QuestionsListSubView::resize()
 {
-    m_questions->setFixedSize(width() - 2*m_back->width(), height() - 20);
+    m_questions->setFixedSize(width() - 2*m_back->width() - 30, height() - 20);
 }
 
 void QuestionsListSubView::setFixedSize(int w, int h)

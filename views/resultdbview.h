@@ -3,6 +3,8 @@
 
 #include "testcreatorbaseview.h"
 
+class ResultDbSubView;
+
 class ResultDbView : public TestCreatorBaseView
 {
     Q_OBJECT
@@ -11,8 +13,17 @@ public:
 
     void setFixedSize(int w, int h);
 
+public slots:
+    void loadDbModel();
+
+signals:
+    void resultDbChanged(const QString &name);
+
 protected:
     virtual void resize();
+
+private:
+    ResultDbSubView *m_resultView;
 };
 
 #endif // RESULTDBVIEW_H

@@ -29,7 +29,8 @@ SOURCES += main.cpp\
     subviews/questioneditorsubview.cpp \
     subviews/settingsubview.cpp \
     subviews/questionslistsubview.cpp \
-    subviews/dbtestviewer.cpp
+    subviews/dbtestviewer.cpp \
+    subviews/resultdbsubview.cpp
 
 HEADERS  += \
     docfileprocessing.h \
@@ -49,7 +50,8 @@ HEADERS  += \
     subviews/questioneditorsubview.h \
     subviews/settingsubview.h \
     subviews/questionslistsubview.h \
-    subviews/dbtestviewer.h
+    subviews/dbtestviewer.h \
+    subviews/resultdbsubview.h
 
 RESOURCES += \
     res.qrc

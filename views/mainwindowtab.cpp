@@ -25,6 +25,9 @@ MainWindowTab::MainWindowTab(QWidget *parent) :
     connect(m_createdTestPage, &TestDbView::showView, this, &MainWindowTab::showView);
     connect(m_createdTestPage, &TestDbView::docFileName, m_creatorPage, &QuestionCreatorTabView::loadDataFromDocFile);
     connect(m_settingsPage, &SettingsTabView::testDbChanged, m_creatorPage, &QuestionCreatorTabView::testDbChanged);
+    connect(this, &MainWindowTab::resultViewOpened, m_testResultPage, &ResultDbView::loadDbModel);
+    connect(m_settingsPage, &SettingsTabView::resultDbChanged, m_testResultPage, &ResultDbView::resultDbChanged);
+    connect(m_tab, &QTabWidget::currentChanged, this, &MainWindowTab::onTabIndexChanged);
 
     m_tab->addTab(m_creatorPage, "Создать тест");
     m_tab->addTab(m_settingsPage, "Настройки");
@@ -51,4 +54,17 @@ void MainWindowTab::resize()
 void MainWindowTab::setCurrentTabView(TestViews view)
 {
     m_tab->setCurrentIndex(view);
+}
+
+void MainWindowTab::onTabIndexChanged(int index)
+{
+    switch(index) {
+    case ResultsView:
+        emit resultViewOpened();
+        break;
+    case StartView:
+    case SettingsView:
+    default:
+        break;
+    }
 }

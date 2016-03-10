@@ -39,7 +39,7 @@ private:
     QListWidget *m_testBox;
     QPushButton *m_openTestFile;
     QPushButton *m_createTestFile;
-    QPushButton   *m_folderContainer;
+    QPushButton *m_folderContainer;
 };
 
 #endif // TESTDBVIEW_H

@@ -20,6 +20,12 @@ public:
 
     void setCurrentTabView(TestViews view);
 
+public slots:
+    void onTabIndexChanged(int index);
+
+signals:
+    void resultViewOpened();
+
 protected:
     virtual void resize();
 

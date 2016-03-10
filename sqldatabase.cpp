@@ -13,6 +13,8 @@
 #include <QString>
 #include <QDebug>
 #include <QDir>
+#include <QMutex>
+#include <QMutexLocker>
 
 SqlDBSaver::SqlDBSaver(QObject *parent) :
     QObject(parent)
@@ -21,6 +23,9 @@ SqlDBSaver::SqlDBSaver(QObject *parent) :
 
 void SqlDBSaver::saveStudentResultToDb(const QString &db, const StudentResult &result)
 {
+    static QMutex mutex;
+    QMutexLocker locker(&mutex);
+
     if (db.isEmpty()) {
         QMessageBox::critical(0, "Can not open database", "Введите имя базы данных на вкладке настройки.");
         return;
