@@ -27,6 +27,7 @@ typedef struct answersinfo {
 } AnswersVector;
 
 typedef struct student {
+    int id;
     QString testName;
     QString firstName;
     QString secondName;
@@ -34,6 +35,7 @@ typedef struct student {
     QString group;
     int score;
     int maxPosibleScore;
+    QString time;
     QList<AnswersVector> answerInfo;
 } StudentResult;
 
