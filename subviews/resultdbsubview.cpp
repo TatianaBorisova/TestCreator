@@ -54,6 +54,11 @@ void ResultDbSubView::resize()
     m_header->setFixedSize(width()*0.7, margin);
     m_update->setFixedWidth(200);
     m_docSaver->setFixedWidth(200);
+
+    //make table full screen
+    for (int i = 0; i < m_model->columnCount(); i++) {
+        m_table->setColumnWidth(i, m_table->width()/m_model->columnCount());
+    }
 }
 
 void ResultDbSubView::setFixedSize(int w, int h)
