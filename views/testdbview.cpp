@@ -6,7 +6,7 @@
 #include <QTabWidget>
 #include <QFileDialog>
 #include <QComboBox>
-
+#include <QLabel>
 #include <QDebug>
 
 namespace {
@@ -19,10 +19,13 @@ TestDbView::TestDbView(QWidget *parent) :
     TestCreatorBaseView(parent),
     m_box(new QGridLayout(this)),
     m_vbox(new QVBoxLayout(this)),
+    m_hbox(new QHBoxLayout(this)),
     m_testBox(new QListWidget(this)),
     m_openTestFile(new QPushButton("Открыть тест", this)),
     m_createTestFile(new QPushButton("Создать новый тест", this)),
-    m_folderContainer(new QPushButton("Выбрать папку", this))
+    m_folderContainer(new QPushButton("Выбрать папку", this)),
+    m_header(new QLabel("Выбранная папка:", this)),
+    m_chosenFolder(new QLabel(this))
 {
     connect(m_openTestFile, &QPushButton::clicked, this, &TestDbView::openExistedTest);
     connect(m_createTestFile, &QPushButton::clicked, this, &TestDbView::createNewTest);
@@ -35,9 +38,13 @@ TestDbView::TestDbView(QWidget *parent) :
     m_vbox->addWidget(m_openTestFile);
     m_vbox->addWidget(m_createTestFile);
 
+    m_hbox->addWidget(m_header);
+    m_hbox->addWidget(m_chosenFolder);
+
     m_box->setSpacing(minHeight);
-    m_box->addWidget(m_testBox, 0, 0);
-    m_box->addLayout(m_vbox, 0, 1);
+    m_box->addLayout(m_hbox, 0, 0);
+    m_box->addWidget(m_testBox, 1, 0);
+    m_box->addLayout(m_vbox, 1, 1);
 
     m_box->setMargin(minHeight);
 
@@ -65,9 +72,11 @@ void TestDbView::loadFromFolder()
 
         filePath = filePath + "/";
 
+        m_filePath = filePath;
+        m_chosenFolder->setText(filePath);
         m_testBox->clear();
 
-        QDir chosenDir(filePath);
+        QDir chosenDir(m_filePath);
         QStringList allFiles = chosenDir.entryList(QDir::Files | QDir::NoDotAndDotDot);
 
         for (int i = 0; i < allFiles.count(); i++) {
@@ -80,7 +89,7 @@ void TestDbView::loadFromFolder()
 
                     QListWidgetItem *newItem = new QListWidgetItem();
 
-                    newItem->setText(filePath + allFiles.at(i));
+                    newItem->setText(allFiles.at(i));
                     m_testBox->insertItem(m_testBox->count(), newItem);
                 }
             }
@@ -99,7 +108,7 @@ void TestDbView::openExistedTest()
     if (m_testBox->count() > 0) {
         QListWidgetItem *item = m_testBox->currentItem();
         if (item) {
-            filename = item->text();
+            filename = m_filePath + item->text();
             QFile file(filename);
 
             if (file.exists()) {
@@ -115,6 +124,7 @@ void TestDbView::openExistedTest()
         }
     }
     emit showView(CreatorView);
+     qDebug() << "!!!!!!!!!!!!!!!!!!!" << filename;
 }
 
 bool TestDbView::findDumlicateFile(QListWidget *itemBox, const QString &fileName)
@@ -135,6 +145,8 @@ void TestDbView::fillChoiceBox(QString folderPath)
         if (folderPath.at(folderPath.count() - 1) != '/')
             folderPath = folderPath + slash;
 
+        m_filePath = folderPath;
+        m_chosenFolder->setText(folderPath);
         m_testBox->clear();
 
         QDir entryDir(folderPath);
@@ -152,7 +164,7 @@ void TestDbView::fillChoiceBox(QString folderPath)
 
                         QListWidgetItem *newItem = new QListWidgetItem();
 
-                        newItem->setText(folderPath + filesList.at(i));
+                        newItem->setText(filesList.at(i));
                         m_testBox->insertItem(m_testBox->count(), newItem);
                     }
                 }

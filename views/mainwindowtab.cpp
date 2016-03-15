@@ -24,6 +24,7 @@ MainWindowTab::MainWindowTab(QWidget *parent) :
 
     connect(m_createdTestPage, &TestDbView::showView, this, &MainWindowTab::showView);
     connect(m_createdTestPage, &TestDbView::docFileName, m_creatorPage, &QuestionCreatorTabView::loadDataFromDocFile);
+    connect(m_createdTestPage, &TestDbView::bdFileName, m_creatorPage, &QuestionCreatorTabView::loadDbData);
     connect(m_settingsPage, &SettingsTabView::testDbChanged, m_creatorPage, &QuestionCreatorTabView::testDbChanged);
     connect(this, &MainWindowTab::resultViewOpened, m_testResultPage, &ResultDbView::loadDbModel);
     connect(m_settingsPage, &SettingsTabView::resultDbChanged, m_testResultPage, &ResultDbView::resultDbChanged);

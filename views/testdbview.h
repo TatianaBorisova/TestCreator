@@ -7,6 +7,8 @@ class QPushButton;
 class QGridLayout;
 class QListWidget;
 class QVBoxLayout;
+class QLabel;
+class QHBoxLayout;
 
 class TestDbView : public TestCreatorBaseView
 {
@@ -36,10 +38,14 @@ private:
 
     QGridLayout *m_box;
     QVBoxLayout *m_vbox;
+    QHBoxLayout *m_hbox;
     QListWidget *m_testBox;
     QPushButton *m_openTestFile;
     QPushButton *m_createTestFile;
     QPushButton *m_folderContainer;
+    QLabel      *m_header;
+    QLabel      *m_chosenFolder;
+    QString      m_filePath;
 };
 
 #endif // TESTDBVIEW_H

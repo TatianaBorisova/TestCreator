@@ -33,6 +33,7 @@ public slots:
     void saveDataInDb();
     void loadDataFromDocFile(const QString &name);
     void loadDataFromDBFile(const TestData &data);
+    void loadDbData(const QString &name);
     void setLoadedQuestionsCount(int value);
 
 protected slots:

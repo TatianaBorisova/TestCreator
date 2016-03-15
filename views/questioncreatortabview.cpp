@@ -163,6 +163,11 @@ void QuestionCreatorTabView::saveDataInDb()
     m_dbSave->saveTestToDb(m_dbName, m_data);
 }
 
+void QuestionCreatorTabView::loadDbData(const QString &name)
+{
+    m_dbSave->loadDbFile(name);
+}
+
 void QuestionCreatorTabView::loadDataFromDocFile(const QString &name)
 {
     if (!name.isEmpty()) {
