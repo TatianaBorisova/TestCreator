@@ -73,20 +73,35 @@ void ClientInfoSaver::readyRead()
             }
 
             QString fullMsg(newarray.toStdString().c_str());
-            QStringList dataList = fullMsg.split(";");
-            StudentResult clientParcedData = fillResultStructure(dataList);
-
-            qDebug() << clientParcedData.testName
-                     << clientParcedData.firstName
-                     << clientParcedData.secondName
-                     << clientParcedData.surname
-                     << clientParcedData.group
-                     << clientParcedData.score
-                     << clientParcedData.maxPosibleScore;
-
-            emit saveResultToDataBase(m_resultDbName, clientParcedData);
+            //check if it is cmd msg
+            if (msgSize == cmdSize && fullMsg.contains(cmdMsg)) {
+                requestCmdMsg(fullMsg);
+            } else {
+                saveResultDbMsg(fullMsg);
+            }
         }
     }
+}
+
+void ClientInfoSaver::saveResultDbMsg(const QString &str)
+{
+    QStringList dataList = str.split(";");
+    StudentResult clientParcedData = fillResultStructure(dataList);
+
+    qDebug() << clientParcedData.testName
+             << clientParcedData.firstName
+             << clientParcedData.secondName
+             << clientParcedData.surname
+             << clientParcedData.group
+             << clientParcedData.score
+             << clientParcedData.maxPosibleScore;
+
+    emit saveResultToDataBase(m_resultDbName, clientParcedData);
+}
+
+void ClientInfoSaver::requestCmdMsg(const QString &str)
+{
+
 }
 
 StudentResult ClientInfoSaver::fillResultStructure(const QStringList &dataList) const

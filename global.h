@@ -6,6 +6,8 @@
 #include <QTime>
 
 const int headerMsgSize = 16;
+const QString cmdMsg = QString("GETFILES");
+const int cmdSize = 8;
 
 typedef struct answers {
     QString correctAnswer;

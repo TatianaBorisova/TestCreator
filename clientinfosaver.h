@@ -28,6 +28,8 @@ public slots:
 
 private:
     StudentResult fillResultStructure(const QStringList &dataList) const;
+    void saveResultDbMsg(const QString &str);
+    void requestCmdMsg(const QString &str);
 
 private:
     QTcpSocket *m_socket;
