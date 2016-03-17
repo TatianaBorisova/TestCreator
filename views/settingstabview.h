@@ -16,6 +16,7 @@ public:
 signals:
     void testDbChanged(const QString &value);
     void resultDbChanged(const QString &value);
+    void testFolderPathChanged(const QString &path);
 
 protected:
     virtual void resize();

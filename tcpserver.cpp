@@ -62,7 +62,7 @@ void TcpServer::incomingConnection(qintptr socketDescriptor)
     // We have a new connection
     qDebug() << socketDescriptor << " Connecting...";
 
-    ClientInfoSaver *thread = new ClientInfoSaver(socketDescriptor, this);
+    ClientInfoSaver *thread = new ClientInfoSaver(socketDescriptor);
     thread->saveDbName(m_resultDb);
 
     if (m_clients.count() > 0) {
@@ -71,11 +71,18 @@ void TcpServer::incomingConnection(qintptr socketDescriptor)
         m_clients.insert(0, thread);
     }
 
+    connect(thread, SIGNAL(testFolderRequest()), this, SLOT(sendTestFolder()), Qt::QueuedConnection);
+    connect(this, SIGNAL(testFolderRequest(QString)), thread, SLOT(processTestFolder(QString)), Qt::QueuedConnection);
     connect(this, &TcpServer::resultDbName, thread, &ClientInfoSaver::saveDbName, Qt::QueuedConnection);
     connect(thread, SIGNAL(finished()), thread, SLOT(deleteLater()));
     connect(this, SIGNAL(closeClientConnection()), thread, SLOT(disconnected()));
 
     thread->start();
+}
+
+void TcpServer::sendTestFolder()
+{
+    emit testFolderRequest(m_testsFolderPath);
 }
 
 void TcpServer::stopServer()
@@ -87,4 +94,10 @@ void TcpServer::stopServer()
 void TcpServer::saveResultDbName(const QString &name)
 {
     m_resultDb = name;
+}
+
+void TcpServer::setTestFolderPath(const QString &path)
+{
+    qDebug() << "setTestFolderPath" << path;
+    m_testsFolderPath = path;
 }

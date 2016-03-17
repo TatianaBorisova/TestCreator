@@ -305,3 +305,29 @@ void SqlDBSaver::loadDbFile(const QString &filename)
     emit readTests(list);
     dbPtr.close();
 }
+
+bool SqlDBSaver::checkIfTestDb(const QString &filename)
+{
+    QFile file(filename);
+    if (file.open(QIODevice::ReadOnly)) {
+        file.seek(0);
+
+        QByteArray bytes = file.read(16);
+        if (QString(bytes.data()).contains("SQLite format")) {
+
+            QSqlDatabase dbPtr = QSqlDatabase::addDatabase("QSQLITE");
+            dbPtr.setDatabaseName(filename);
+            if (!dbPtr.open()) {
+                QMessageBox::critical(0, "Can not open database", "Не могу открыть базу данных.\n");
+                return false;
+            }
+            if (dbPtr.tables().contains(QLatin1String("testdata"))
+                    && dbPtr.tables().contains(QLatin1String("questionsdata"))) {
+                return true;
+            }
+
+            dbPtr.close();
+        }
+    }
+    return false;
+}

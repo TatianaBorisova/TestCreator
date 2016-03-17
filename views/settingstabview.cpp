@@ -8,6 +8,7 @@ SettingsTabView::SettingsTabView(QWidget *parent) :
 {
     connect(m_settings, &SettingSubView::testDbChanged, this, &SettingsTabView::testDbChanged);
     connect(m_settings, &SettingSubView::resultDbChanged, this, &SettingsTabView::resultDbChanged);
+    connect(this, &SettingsTabView::testFolderPathChanged, m_settings, &SettingSubView::testFolderPathChanged);
 }
 
 void SettingsTabView::resize()

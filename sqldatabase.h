@@ -15,6 +15,8 @@ class SqlDBSaver : public QObject
 public:
     explicit SqlDBSaver(QObject *parent = 0);
 
+    static bool checkIfTestDb(const QString &filename);
+
 signals:
     void sendFullTestData(const TestData &data);
     void readTests(const QList<TestHeaderData> &list);

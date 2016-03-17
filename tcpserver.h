@@ -23,11 +23,14 @@ public:
 public slots:
     void startServer();
     void stopServer();
+    void setTestFolderPath(const QString &path);
+    void sendTestFolder();
 
 signals:
     void serverStarted();
     void closeClientConnection();
     void resultDbName(const QString &name);
+    void testFolderRequest(const QString &path);
 
 protected:
     void incomingConnection(qintptr socketDescriptor);
@@ -40,6 +43,7 @@ private:
     int                         m_listeningPort;
     QString                     m_listeningIp;
     QString                     m_resultDb;
+    QString                     m_testsFolderPath;
 };
 
 #endif // TCPSERVER_H

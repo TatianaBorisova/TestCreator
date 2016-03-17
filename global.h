@@ -5,7 +5,7 @@
 #include <QList>
 #include <QTime>
 
-const int headerMsgSize = 16;
+const int headerMsgSize = 8;
 const QString cmdMsg = QString("GETFILES");
 const int cmdSize = 8;
 

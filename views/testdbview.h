@@ -14,14 +14,20 @@ class TestDbView : public TestCreatorBaseView
 {
     Q_OBJECT
 public:
+    Q_PROPERTY(QString testFolderPath READ testFolderPath WRITE setTestFolderPath NOTIFY testFolderPathChanged)
+
     explicit TestDbView(QWidget *parent = 0);
 
     void setFixedSize(int w, int h);
 
+    void defaulTestBoxPath(QString folderPath);
+    QString testFolderPath() const;
+    void setTestFolderPath(const QString &path);
+
 signals:
     void bdFileName(const QString &filename);
     void docFileName(const QString &filename);
-
+    void testFolderPathChanged(const QString &path);
 
 protected:
     virtual void resize();
@@ -33,8 +39,6 @@ protected slots:
 
 private:
     bool findDumlicateFile(QListWidget *itemBox, const QString &fileName);
-    void fillChoiceBox(QString folderPath);
-    bool checkIfSqlliteDb(const QString &filename);
 
     QGridLayout *m_box;
     QVBoxLayout *m_vbox;

@@ -33,10 +33,11 @@ SettingSubView::SettingSubView(QWidget *parent) :
 
     connect(m_startBtn, &QPushButton::clicked, this, &SettingSubView::startServer);
     connect(m_stopBtn,  &QPushButton::clicked, m_server, &TcpServer::stopServer);
-    connect(m_chooseTestDb,  &QPushButton::clicked, this, &SettingSubView::chooseTestDB);
+    connect(m_chooseTestDb, &QPushButton::clicked, this, &SettingSubView::chooseTestDB);
     connect(m_chooseResDb,  &QPushButton::clicked, this, &SettingSubView::chooseResDB);
     connect(m_server, &TcpServer::serverStarted, this, &SettingSubView::setStartSetverState);
     connect(m_server, &TcpServer::closeClientConnection, this, &SettingSubView::setStopSetverState);
+    connect(this, &SettingSubView::testFolderPathChanged, m_server, &TcpServer::setTestFolderPath);
     connect(this, &SettingSubView::resultDbChanged, m_server, &TcpServer::resultDbName);
 
     m_testBox->setReadOnly(true);

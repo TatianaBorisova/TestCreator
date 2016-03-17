@@ -14,17 +14,19 @@ class ClientInfoSaver : public QThread
     Q_OBJECT
 public:
     explicit ClientInfoSaver(qintptr id, QObject *parent = 0);
-
     void run();
 
 signals:
     void error(QTcpSocket::SocketError socketerror);
     void saveResultToDataBase(const QString &db, const StudentResult &result);
+    void testFolderRequest();
 
 public slots:
     void readyRead();
     void disconnected();
     void saveDbName(const QString &db);
+    void processTestFolder(const QString &testFolder);
+    void sendDataToClient(const QString &data);
 
 private:
     StudentResult fillResultStructure(const QStringList &dataList) const;

@@ -3,6 +3,7 @@
 
 #include <QDataStream>
 #include <QDebug>
+#include <QDir>
 
 ClientInfoSaver::ClientInfoSaver(qintptr id, QObject *parent) :
     QThread(parent),
@@ -18,7 +19,7 @@ void ClientInfoSaver::run()
 {
     qDebug() << " Thread started";
 
-    m_socket = new QTcpSocket();
+    m_socket = new QTcpSocket(this);
 
     // set the ID
     if(!m_socket->setSocketDescriptor(this->m_socketDescriptor))
@@ -38,7 +39,6 @@ void ClientInfoSaver::run()
 
 void ClientInfoSaver::readyRead()
 {
-    qDebug() << "Client ready to read" << m_socket->bytesAvailable() << "bytes.";
     while(m_socket->bytesAvailable())
     {
         if (m_socket->bytesAvailable() >= headerMsgSize) {
@@ -73,8 +73,9 @@ void ClientInfoSaver::readyRead()
             }
 
             QString fullMsg(newarray.toStdString().c_str());
+
             //check if it is cmd msg
-            if (msgSize == cmdSize && fullMsg.contains(cmdMsg)) {
+            if ((msgSize - headerMsgSize) == cmdSize && fullMsg.contains(cmdMsg)) {
                 requestCmdMsg(fullMsg);
             } else {
                 saveResultDbMsg(fullMsg);
@@ -101,7 +102,8 @@ void ClientInfoSaver::saveResultDbMsg(const QString &str)
 
 void ClientInfoSaver::requestCmdMsg(const QString &str)
 {
-
+    qDebug() << "requestCmdMsg" << str;
+    emit testFolderRequest();
 }
 
 StudentResult ClientInfoSaver::fillResultStructure(const QStringList &dataList) const
@@ -132,4 +134,54 @@ void ClientInfoSaver::disconnected()
 void ClientInfoSaver::saveDbName(const QString &db)
 {
     m_resultDbName = db;
+}
+
+void ClientInfoSaver::processTestFolder(const QString &testFolder)
+{
+    qDebug() << "processTestFolder" << testFolder;
+
+    QString folder = testFolder;
+
+    if (!folder.isEmpty()) {
+
+        if (folder.at(folder.count() - 1) != '/')
+            folder = folder + '/';
+
+        QDir entryDir(folder);
+        if (entryDir.exists()) {
+
+            QStringList filesList = entryDir.entryList(QDir::Files | QDir::NoDotAndDotDot);
+            QString filesString("");
+
+            for (int i = 0; i < filesList.count(); i++) {
+                if (SqlDBSaver::checkIfTestDb(filesList.at(i))) {
+                   filesString += QString( folder + filesList.at(i) + ";;");
+                }
+            }
+            sendDataToClient(filesString);
+        }
+    }
+}
+
+void ClientInfoSaver::sendDataToClient(const QString &data)
+{
+    if (data.length() > 0) {
+        QString cmd = data;
+        QByteArray bytes(cmd.toStdString().c_str());
+        //calculate msg sum
+        int msgSize = headerMsgSize + bytes.length();
+
+        //put data to bytearray
+        QByteArray  arrBlock;
+        arrBlock.fill(0, msgSize);
+        arrBlock.insert(0, QString::number(msgSize));
+        arrBlock.insert(headerMsgSize, cmd);
+        arrBlock.resize(msgSize);
+
+        qDebug() << "server arr = " << arrBlock;
+        //send data to server
+        qDebug() << m_socket->write(arrBlock);
+        m_socket->flush();
+        m_socket->waitForBytesWritten(3000);
+    }
 }
