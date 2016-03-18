@@ -17,7 +17,6 @@ SOURCES += main.cpp\
     stringencryption.cpp \
     tcpserver.cpp \
     sqldatabase.cpp \
-    clientinfosaver.cpp \
     mainwindow.cpp \
     views/testcreatorbaseview.cpp \
     views/mainwindowtab.cpp \
@@ -30,7 +29,8 @@ SOURCES += main.cpp\
     subviews/settingsubview.cpp \
     subviews/questionslistsubview.cpp \
     subviews/dbtestviewer.cpp \
-    subviews/resultdbsubview.cpp
+    subviews/resultdbsubview.cpp \
+    clientdatamanager.cpp
 
 HEADERS  += \
     docfileprocessing.h \
@@ -38,7 +38,6 @@ HEADERS  += \
     global.h \
     tcpserver.h \
     sqldatabase.h \
-    clientinfosaver.h \
     mainwindow.h \
     views/testcreatorbaseview.h \
     views/mainwindowtab.h \
@@ -51,7 +50,8 @@ HEADERS  += \
     subviews/settingsubview.h \
     subviews/questionslistsubview.h \
     subviews/dbtestviewer.h \
-    subviews/resultdbsubview.h
+    subviews/resultdbsubview.h \
+    clientdatamanager.h
 
 RESOURCES += \
     res.qrc

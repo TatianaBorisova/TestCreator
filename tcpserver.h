@@ -8,7 +8,7 @@
 
 class QTcpSocket;
 class QStringList;
-class ClientInfoSaver;
+class ClientDataManager;
 
 class TcpServer : public QTcpServer
 {
@@ -39,7 +39,7 @@ private slots:
     void saveResultDbName(const QString &name);
 
 private:
-    QMap<int, ClientInfoSaver*> m_clients;
+    QMap<int, ClientDataManager*> m_clients;
     int                         m_listeningPort;
     QString                     m_listeningIp;
     QString                     m_resultDb;

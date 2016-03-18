@@ -1,21 +1,21 @@
-#include "clientinfosaver.h"
+#include "clientdatamanager.h"
 #include "sqldatabase.h"
 
 #include <QDataStream>
 #include <QDebug>
 #include <QDir>
 
-ClientInfoSaver::ClientInfoSaver(qintptr id, QObject *parent) :
+ClientDataManager::ClientDataManager(qintptr id, QObject *parent) :
     QThread(parent),
-    m_db(new SqlDBSaver(this))
+    m_db(new SqlliteDbManager(this))
 {
     qRegisterMetaType<StudentResult>("StudentResult");
 
-    connect(this, &ClientInfoSaver::saveResultToDataBase, m_db, &SqlDBSaver::saveStudentResultToDb);
+    connect(this, &ClientDataManager::saveResultToDataBase, m_db, &SqlliteDbManager::saveStudentResultToDb);
     this->m_socketDescriptor = id;
 }
 
-void ClientInfoSaver::run()
+void ClientDataManager::run()
 {
     qDebug() << " Thread started";
 
@@ -37,7 +37,7 @@ void ClientInfoSaver::run()
     exec();
 }
 
-void ClientInfoSaver::readyRead()
+void ClientDataManager::readyRead()
 {
     while(m_socket->bytesAvailable())
     {
@@ -74,17 +74,20 @@ void ClientInfoSaver::readyRead()
 
             QString fullMsg(newarray.toStdString().c_str());
 
+            qDebug() << "size = " << (msgSize - headerMsgSize) << "fullMsg = " << fullMsg;
             //check if it is cmd msg
             if ((msgSize - headerMsgSize) == cmdSize && fullMsg.contains(cmdMsg)) {
-                requestCmdMsg(fullMsg);
+                processRequestCmdMsg(fullMsg);
+            } else if (fullMsg.contains(downloadMsg)) {
+                processRequestDownloadFileMsg(fullMsg);
             } else {
-                saveResultDbMsg(fullMsg);
+                saveTestResultInDbMsg(fullMsg);
             }
         }
     }
 }
 
-void ClientInfoSaver::saveResultDbMsg(const QString &str)
+void ClientDataManager::saveTestResultInDbMsg(const QString &str)
 {
     QStringList dataList = str.split(";");
     StudentResult clientParcedData = fillResultStructure(dataList);
@@ -100,13 +103,39 @@ void ClientInfoSaver::saveResultDbMsg(const QString &str)
     emit saveResultToDataBase(m_resultDbName, clientParcedData);
 }
 
-void ClientInfoSaver::requestCmdMsg(const QString &str)
+void ClientDataManager::processRequestCmdMsg(const QString &str)
 {
     qDebug() << "requestCmdMsg" << str;
     emit testFolderRequest();
 }
 
-StudentResult ClientInfoSaver::fillResultStructure(const QStringList &dataList) const
+void ClientDataManager::processRequestDownloadFileMsg(const QString &str)
+{
+    qDebug() << "processRequestDownloadFileMsg" << str;
+    QString filename = str;
+
+    filename = filename.remove(downloadMsg);
+    if (!filename.isEmpty()) {
+
+        qDebug() << "real file name " << filename;
+
+        QFile file(filename);
+        if (file.exists()) {
+            QByteArray bytes;
+            if (file.open(QIODevice::ReadOnly))
+                bytes = file.readAll();
+
+            int lastSlashIndx = filename.lastIndexOf("/");
+            int lastPointIndx = filename.lastIndexOf(".");
+
+            sendFileToClient(bytes, filename.mid(lastSlashIndx + 1, lastPointIndx - (lastSlashIndx + 1)));
+
+            file.close();
+        }
+    }
+}
+
+StudentResult ClientDataManager::fillResultStructure(const QStringList &dataList) const
 {
     StudentResult result;
     qDebug() << "count = " << dataList.count();
@@ -123,7 +152,7 @@ StudentResult ClientInfoSaver::fillResultStructure(const QStringList &dataList) 
     return result;
 }
 
-void ClientInfoSaver::disconnected()
+void ClientDataManager::disconnected()
 {
     qDebug() << m_socketDescriptor << " Disconnected";
 
@@ -131,12 +160,12 @@ void ClientInfoSaver::disconnected()
     exit(0);
 }
 
-void ClientInfoSaver::saveDbName(const QString &db)
+void ClientDataManager::saveDbName(const QString &db)
 {
     m_resultDbName = db;
 }
 
-void ClientInfoSaver::processTestFolder(const QString &testFolder)
+void ClientDataManager::processTestFolder(const QString &testFolder)
 {
     qDebug() << "processTestFolder" << testFolder;
 
@@ -154,16 +183,16 @@ void ClientInfoSaver::processTestFolder(const QString &testFolder)
             QString filesString("");
 
             for (int i = 0; i < filesList.count(); i++) {
-                if (SqlDBSaver::checkIfTestDb(filesList.at(i))) {
-                   filesString += QString( folder + filesList.at(i) + ";;");
+                if (SqlliteDbManager::checkIfTestDb(filesList.at(i))) {
+                    filesString += QString( folder + filesList.at(i) + ";;");
                 }
             }
-            sendDataToClient(filesString);
+            sendFilelistToClient(filesString);
         }
     }
 }
 
-void ClientInfoSaver::sendDataToClient(const QString &data)
+void ClientDataManager::sendFilelistToClient(const QString &data)
 {
     if (data.length() > 0) {
         QString cmd = data;
@@ -178,10 +207,34 @@ void ClientInfoSaver::sendDataToClient(const QString &data)
         arrBlock.insert(headerMsgSize, cmd);
         arrBlock.resize(msgSize);
 
-        qDebug() << "server arr = " << arrBlock;
+        qDebug() << "sendFilelistToClient arr = " << arrBlock;
         //send data to server
         qDebug() << m_socket->write(arrBlock);
         m_socket->flush();
         m_socket->waitForBytesWritten(3000);
     }
+}
+
+void ClientDataManager::sendFileToClient(const QByteArray &data, const QString &filename)
+{
+    QByteArray filenameArr = filename.toUtf8();
+
+    //calculate msg sum
+    int msgSize = headerMsgSize + newfileMsg.length() + filenameArr.length() + newentryMsg.length() + data.length();
+
+    //put data to bytearray
+    QByteArray  arrBlock;
+    arrBlock.fill(0, msgSize);
+    arrBlock.insert(0, QString::number(msgSize));
+    arrBlock.insert(headerMsgSize, newfileMsg);
+    arrBlock.insert(headerMsgSize + newfileMsg.length(), filenameArr);
+    arrBlock.insert(headerMsgSize + newfileMsg.length() + filenameArr.length(), newentryMsg);
+    arrBlock.insert(headerMsgSize + newfileMsg.length() + filenameArr.length() + newentryMsg.length(), data);
+    arrBlock.resize(msgSize);
+
+    qDebug() << "sendFileToClient arr = " << arrBlock;
+    //send data to server
+    qDebug() << m_socket->write(arrBlock);
+    m_socket->flush();
+    m_socket->waitForBytesWritten(3000);
 }

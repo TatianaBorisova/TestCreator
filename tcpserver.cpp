@@ -1,6 +1,6 @@
 #include "tcpserver.h"
 #include "global.h"
-#include "clientinfosaver.h"
+#include "clientdatamanager.h"
 
 #include <QTcpSocket>
 #include <QMessageBox>
@@ -62,7 +62,7 @@ void TcpServer::incomingConnection(qintptr socketDescriptor)
     // We have a new connection
     qDebug() << socketDescriptor << " Connecting...";
 
-    ClientInfoSaver *thread = new ClientInfoSaver(socketDescriptor);
+    ClientDataManager *thread = new ClientDataManager(socketDescriptor);
     thread->saveDbName(m_resultDb);
 
     if (m_clients.count() > 0) {
@@ -73,7 +73,7 @@ void TcpServer::incomingConnection(qintptr socketDescriptor)
 
     connect(thread, SIGNAL(testFolderRequest()), this, SLOT(sendTestFolder()), Qt::QueuedConnection);
     connect(this, SIGNAL(testFolderRequest(QString)), thread, SLOT(processTestFolder(QString)), Qt::QueuedConnection);
-    connect(this, &TcpServer::resultDbName, thread, &ClientInfoSaver::saveDbName, Qt::QueuedConnection);
+    connect(this, &TcpServer::resultDbName, thread, &ClientDataManager::saveDbName, Qt::QueuedConnection);
     connect(thread, SIGNAL(finished()), thread, SLOT(deleteLater()));
     connect(this, SIGNAL(closeClientConnection()), thread, SLOT(disconnected()));
 

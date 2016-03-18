@@ -5,8 +5,11 @@
 #include <QList>
 #include <QTime>
 
-const int headerMsgSize = 8;
+const int headerMsgSize = 16;
 const QString cmdMsg = QString("GETFILES");
+const QString downloadMsg = QString("DOWNLOADFILE");
+const QString newfileMsg = QString("NEWFILENAME");
+const QString newentryMsg = QString("NEWFILEENTRY");
 const int cmdSize = 8;
 
 typedef struct answers {

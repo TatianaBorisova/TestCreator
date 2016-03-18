@@ -13,7 +13,7 @@ QuestionCreatorTabView::QuestionCreatorTabView(QWidget *parent) :
     TestCreatorBaseView(parent),
     m_questionEditor(new QuestionEditorSubView(this)),
     m_testData(new TestEditorSubView(this)),
-    m_dbSave(new SqlDBSaver(this)),
+    m_dbSave(new SqlliteDbManager(this)),
     m_docReader(new DocFileProcessing(this)),
     m_questionsViewer(new QuestionsListSubView(this)),
     m_dbViewer(new DbTestViewer(this))
@@ -31,10 +31,10 @@ QuestionCreatorTabView::QuestionCreatorTabView(QWidget *parent) :
     connect(this, &QuestionCreatorTabView::updatedIndexData, m_questionEditor, &QuestionEditorSubView::updatedIndexData);
     connect(m_testData, &TestEditorSubView::saveDataInDb, this, &QuestionCreatorTabView::saveDataInDb);
     connect(m_testData, &TestEditorSubView::loadedDocFile, this, &QuestionCreatorTabView::loadDataFromDocFile);
-    connect(m_testData, &TestEditorSubView::loadedDBFile, m_dbSave, &SqlDBSaver::loadDbFile);
-    connect(m_dbSave, &SqlDBSaver::readTests, this, &QuestionCreatorTabView::loadTestList);
-    connect(m_dbSave, &SqlDBSaver::sendFullTestData, this, &QuestionCreatorTabView::loadDataFromDBFile);
-    connect(m_dbViewer, &DbTestViewer::chosenTest, m_dbSave, &SqlDBSaver::loadTestDataFromDbFile);
+    connect(m_testData, &TestEditorSubView::loadedDBFile, m_dbSave, &SqlliteDbManager::loadDbFile);
+    connect(m_dbSave, &SqlliteDbManager::readTests, this, &QuestionCreatorTabView::loadTestList);
+    connect(m_dbSave, &SqlliteDbManager::sendFullTestData, this, &QuestionCreatorTabView::loadDataFromDBFile);
+    connect(m_dbViewer, &DbTestViewer::chosenTest, m_dbSave, &SqlliteDbManager::loadTestDataFromDbFile);
     connect(this, &QuestionCreatorTabView::loadTestData, m_testData, &TestEditorSubView::loadTestFileData);
 }
 

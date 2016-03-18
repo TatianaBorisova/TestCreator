@@ -8,12 +8,12 @@
 class QSqlTableModel;
 class QSqlDatabase;
 
-class SqlDBSaver : public QObject
+class SqlliteDbManager : public QObject
 {
     Q_OBJECT
 
 public:
-    explicit SqlDBSaver(QObject *parent = 0);
+    explicit SqlliteDbManager(QObject *parent = 0);
 
     static bool checkIfTestDb(const QString &filename);
 

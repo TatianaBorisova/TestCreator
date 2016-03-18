@@ -82,7 +82,7 @@ void TestDbView::loadFromFolder()
             QFileInfo fileExt(allFiles.at(i));
             QString ext = fileExt.suffix().toLower();
 
-            if (ext == ".doc" || ext == ".docx" || SqlDBSaver::checkIfTestDb(allFiles.at(i))) {
+            if (ext == ".doc" || ext == ".docx" || SqlliteDbManager::checkIfTestDb(allFiles.at(i))) {
 
                 if (!findDumlicateFile(m_testBox, allFiles.at(i))) {
 
@@ -127,7 +127,7 @@ void TestDbView::openExistedTest()
 
                 if (ext == ".doc" || ext == ".docx") {
                     emit docFileName(filename);
-                } else if (SqlDBSaver::checkIfTestDb(filename)) {
+                } else if (SqlliteDbManager::checkIfTestDb(filename)) {
                     emit bdFileName(filename);
                 }
             }
@@ -168,7 +168,7 @@ void TestDbView::defaulTestBoxPath(QString folderPath)
                 QFileInfo fileExt(filesList.at(i));
                 QString ext = fileExt.suffix().toLower();
 
-                if (ext == ".doc" || ext == ".docx" || SqlDBSaver::checkIfTestDb(filesList.at(i))) {
+                if (ext == ".doc" || ext == ".docx" || SqlliteDbManager::checkIfTestDb(filesList.at(i))) {
                     if (!findDumlicateFile(m_testBox, filesList.at(i))) {
 
                         QListWidgetItem *newItem = new QListWidgetItem();

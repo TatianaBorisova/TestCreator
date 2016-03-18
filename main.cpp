@@ -10,7 +10,7 @@
 
 void testDBSaving()
 {
-    SqlDBSaver db;
+    SqlliteDbManager db;
     TestData data;
 
     data.testName = "Мой тестовый тестище";

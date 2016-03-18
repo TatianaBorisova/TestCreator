@@ -5,7 +5,7 @@
 
 class QuestionEditorSubView;
 class TestEditorSubView;
-class SqlDBSaver;
+class SqlliteDbManager;
 class DocFileProcessing;
 class QuestionsListSubView;
 class DbTestViewer;
@@ -52,7 +52,7 @@ private:
     QuestionsListSubView  *m_questionsViewer;
     //creating test data
     TestData               m_data;
-    SqlDBSaver            *m_dbSave;
+    SqlliteDbManager            *m_dbSave;
     QString                m_dbName;
     DocFileProcessing     *m_docReader;
     DbTestViewer          *m_dbViewer;

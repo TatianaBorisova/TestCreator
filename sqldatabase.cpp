@@ -16,12 +16,12 @@
 #include <QMutex>
 #include <QMutexLocker>
 
-SqlDBSaver::SqlDBSaver(QObject *parent) :
+SqlliteDbManager::SqlliteDbManager(QObject *parent) :
     QObject(parent)
 {
 }
 
-void SqlDBSaver::saveStudentResultToDb(const QString &db, const StudentResult &result)
+void SqlliteDbManager::saveStudentResultToDb(const QString &db, const StudentResult &result)
 {
     static QMutex mutex;
     QMutexLocker locker(&mutex);
@@ -73,7 +73,7 @@ void SqlDBSaver::saveStudentResultToDb(const QString &db, const StudentResult &r
     dbPtr.close();
 }
 
-void SqlDBSaver::saveTestToDb(const QString &dbName, const TestData &result)
+void SqlliteDbManager::saveTestToDb(const QString &dbName, const TestData &result)
 {
     if (dbName.isEmpty()) {
         QMessageBox::critical(0, "Can not open database", "Введите имя базы данных на вкладке настройки.");
@@ -171,7 +171,7 @@ void SqlDBSaver::saveTestToDb(const QString &dbName, const TestData &result)
     dbPtr.close();
 }
 
-void SqlDBSaver::createTestTables(const QString &dbName)
+void SqlliteDbManager::createTestTables(const QString &dbName)
 {
     if (dbName.isEmpty()) {
         QMessageBox::critical(0, "Can not open database", "Введите имя базы данных на вкладке настройки.");
@@ -200,7 +200,7 @@ void SqlDBSaver::createTestTables(const QString &dbName)
     }
 }
 
-void SqlDBSaver::createResultTable(const QString &dbName)
+void SqlliteDbManager::createResultTable(const QString &dbName)
 {
     if (dbName.isEmpty()) {
         QMessageBox::critical(0, "Can not open database", "Введите имя базы данных на вкладке настройки.");
@@ -220,7 +220,7 @@ void SqlDBSaver::createResultTable(const QString &dbName)
     dbPtr.close();
 }
 
-void SqlDBSaver::loadTestDataFromDbFile(const QString &testName)
+void SqlliteDbManager::loadTestDataFromDbFile(const QString &testName)
 {
     TestData data;
     QSqlDatabase dbPtr = QSqlDatabase::addDatabase("QSQLITE");
@@ -269,7 +269,7 @@ void SqlDBSaver::loadTestDataFromDbFile(const QString &testName)
     emit sendFullTestData(data);
 }
 
-void SqlDBSaver::loadDbFile(const QString &filename)
+void SqlliteDbManager::loadDbFile(const QString &filename)
 {
     if (filename.isEmpty()) {
         QMessageBox::critical(0, "Can not open database", "Введите имя базы данных на вкладке настройки.");
@@ -306,7 +306,7 @@ void SqlDBSaver::loadDbFile(const QString &filename)
     dbPtr.close();
 }
 
-bool SqlDBSaver::checkIfTestDb(const QString &filename)
+bool SqlliteDbManager::checkIfTestDb(const QString &filename)
 {
     QFile file(filename);
     if (file.open(QIODevice::ReadOnly)) {
