@@ -19,7 +19,7 @@ public:
     void setFixedSize(int w, int h);
 
 public slots:
-    void setQuestionsLost(const QList<TestQuestions> &list);
+    void setQuestionsList(const QList<TestQuestions> &list);
 
 private slots:
     void back();

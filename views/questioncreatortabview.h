@@ -52,7 +52,7 @@ private:
     QuestionsListSubView  *m_questionsViewer;
     //creating test data
     TestData               m_data;
-    SqlliteDbManager            *m_dbSave;
+    SqlliteDbManager      *m_dbSave;
     QString                m_dbName;
     DocFileProcessing     *m_docReader;
     DbTestViewer          *m_dbViewer;

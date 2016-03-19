@@ -99,10 +99,10 @@ TestData DocFileProcessing::readFromDocFile(const QString &filename, QWidget *pa
 
         for (int i = 0; i < m_statementList.count(); i++) {
             TestQuestions question;
-            question.question = addUpperSymbol(m_statementList.at(i));
+            question.question = StringEncryption::stringEncrypt(addUpperSymbol(m_statementList.at(i)), encryptKey);
             question.weight   = 1;
-            question.answers.correctAnswer    = m_answerList.at(i).correctAnswer;
-            question.answers.uncorrectAnswers = m_answerList.at(i).uncorrectAnswers;
+            question.answers.correctAnswer    = StringEncryption::stringEncrypt(m_answerList.at(i).correctAnswer, encryptKey);
+            question.answers.uncorrectAnswers = StringEncryption::stringEncrypt(m_answerList.at(i).uncorrectAnswers, encryptKey);
             question.answers.imgName          = m_answerList.at(i).imgName;
 
             m_loadedData.questions.append(question);
@@ -133,15 +133,15 @@ QString DocFileProcessing::generateJsonTestFile() const
     for (int i = 0; i < m_statementList.count(); i++) {
         //if last one
         if (i == m_statementList.count() - 1)
-            out << jsonString.arg(StringEncryption::stringEncrypt(m_statementList.at(i), "test"))
-                   .arg(StringEncryption::stringEncrypt(m_answerList.at(i).correctAnswer, "test"))
-                   .arg(StringEncryption::stringEncrypt(m_answerList.at(i).uncorrectAnswers, "test"))
-                   .arg(StringEncryption::stringEncrypt(m_answerList.at(i).imgName, "test"));
+            out << jsonString.arg(StringEncryption::stringEncrypt(m_statementList.at(i), encryptKey))
+                   .arg(StringEncryption::stringEncrypt(m_answerList.at(i).correctAnswer, encryptKey))
+                   .arg(StringEncryption::stringEncrypt(m_answerList.at(i).uncorrectAnswers, encryptKey))
+                   .arg(StringEncryption::stringEncrypt(m_answerList.at(i).imgName, encryptKey));
         else
-            out << jsonString.arg(StringEncryption::stringEncrypt(m_statementList.at(i), "test"))
-                   .arg(StringEncryption::stringEncrypt(m_answerList.at(i).correctAnswer, "test"))
-                   .arg(StringEncryption::stringEncrypt(m_answerList.at(i).uncorrectAnswers, "test"))
-                   .arg(StringEncryption::stringEncrypt(m_answerList.at(i).imgName, "test")) << comma;
+            out << jsonString.arg(StringEncryption::stringEncrypt(m_statementList.at(i), encryptKey))
+                   .arg(StringEncryption::stringEncrypt(m_answerList.at(i).correctAnswer, encryptKey))
+                   .arg(StringEncryption::stringEncrypt(m_answerList.at(i).uncorrectAnswers, encryptKey))
+                   .arg(StringEncryption::stringEncrypt(m_answerList.at(i).imgName, encryptKey)) << comma;
 
         //if img exists lets copy it to test directory
         if (!m_answerList.at(i).imgName.isEmpty()) {

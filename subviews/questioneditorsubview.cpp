@@ -1,4 +1,5 @@
 #include "questioneditorsubview.h"
+#include "stringencryption.h"
 
 #include <QLabel>
 #include <QLineEdit>
@@ -95,10 +96,10 @@ void QuestionEditorSubView::setQuestionsCount(int count)
 
 void QuestionEditorSubView::updatedIndexData(const TestQuestions &test)
 {
-    m_questionBox->setPlainText(test.question);
+    m_questionBox->setPlainText(StringEncryption::stringDecrypt(test.question, encryptKey));
     m_weightBox->setText(QString::number(test.weight));
-    m_correctAnswerBox->setPlainText(test.answers.correctAnswer);
-    m_incorrectAnswerBox->setPlainText(test.answers.uncorrectAnswers);
+    m_correctAnswerBox->setPlainText(StringEncryption::stringDecrypt(test.answers.correctAnswer, encryptKey));
+    m_incorrectAnswerBox->setPlainText(StringEncryption::stringDecrypt(test.answers.uncorrectAnswers, encryptKey));
     m_filepath = test.answers.imgName;
     if (!m_filepath.isEmpty()) {
         m_image->setPixmap(QPixmap(m_filepath).scaled(m_image->width(), m_image->height()));
@@ -108,10 +109,10 @@ void QuestionEditorSubView::updatedIndexData(const TestQuestions &test)
 void QuestionEditorSubView::back()
 {
     TestQuestions question;
-    question.question = m_questionBox->toPlainText();
+    question.question = StringEncryption::stringEncrypt(m_questionBox->toPlainText(), encryptKey);
     question.weight = m_weightBox->text().toInt();
-    question.answers.correctAnswer = m_correctAnswerBox->toPlainText();
-    question.answers.uncorrectAnswers = m_incorrectAnswerBox->toPlainText();
+    question.answers.correctAnswer = StringEncryption::stringEncrypt(m_correctAnswerBox->toPlainText(), encryptKey);
+    question.answers.uncorrectAnswers = StringEncryption::stringEncrypt(m_incorrectAnswerBox->toPlainText(), encryptKey);
     question.answers.imgName = m_filepath;
 
     emit createdQuestion(question, questionCounter());
@@ -141,10 +142,10 @@ void QuestionEditorSubView::loadImage()
 void QuestionEditorSubView::next()
 {
     TestQuestions question;
-    question.question = m_questionBox->toPlainText();
+    question.question = StringEncryption::stringEncrypt(m_questionBox->toPlainText(), encryptKey);
     question.weight = m_weightBox->text().toInt();
-    question.answers.correctAnswer = m_correctAnswerBox->toPlainText();
-    question.answers.uncorrectAnswers = m_incorrectAnswerBox->toPlainText();
+    question.answers.correctAnswer = StringEncryption::stringEncrypt(m_correctAnswerBox->toPlainText(), encryptKey);
+    question.answers.uncorrectAnswers = StringEncryption::stringEncrypt(m_incorrectAnswerBox->toPlainText(), encryptKey);
     question.answers.imgName = m_filepath;
 
     emit createdQuestion(question, questionCounter());

@@ -81,7 +81,9 @@ SettingSubView::SettingSubView(QWidget *parent) :
 
     emit testDbChanged(m_testBox->text());
     emit resultDbChanged(m_resultBox->text());
-    setStopSetverState();
+
+    m_server->startServer();
+    setStartSetverState();
 }
 
 void SettingSubView::chooseTestDB()
@@ -121,12 +123,12 @@ void SettingSubView::setStopSetverState()
 
 QString SettingSubView::testDb() const
 {
-    m_testBox->text();
+    return m_testBox->text();
 }
 
 QString SettingSubView::resultDb() const
 {
-    m_resultBox->text();
+    return m_resultBox->text();
 }
 
 void SettingSubView::startServer()

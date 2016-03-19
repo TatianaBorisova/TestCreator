@@ -13,28 +13,37 @@ QuestionCreatorTabView::QuestionCreatorTabView(QWidget *parent) :
     TestCreatorBaseView(parent),
     m_questionEditor(new QuestionEditorSubView(this)),
     m_testData(new TestEditorSubView(this)),
+    m_questionsViewer(new QuestionsListSubView(this)),
     m_dbSave(new SqlliteDbManager(this)),
     m_docReader(new DocFileProcessing(this)),
-    m_questionsViewer(new QuestionsListSubView(this)),
     m_dbViewer(new DbTestViewer(this))
 {
     showSubView(TestEditor);
     connect(m_testData, SIGNAL(showSubView(SubViews)), this, SLOT(showSubView(SubViews)));
-    connect(m_questionEditor, SIGNAL(showSubView(SubViews)), this, SLOT(showSubView(SubViews)));
+
+    connect(m_questionEditor,  SIGNAL(showSubView(SubViews)), this, SLOT(showSubView(SubViews)));
     connect(m_questionsViewer, SIGNAL(showSubView(SubViews)), this, SLOT(showSubView(SubViews)));
+
     connect(m_questionEditor, &QuestionEditorSubView::createdQuestion, this, &QuestionCreatorTabView::insertQuestion);
-    connect(m_testData, &TestEditorSubView::testNameChanged, this, &QuestionCreatorTabView::testNameChanged);
+
+    connect(m_testData,       &TestEditorSubView::testNameChanged,            this, &QuestionCreatorTabView::testNameChanged);
     connect(m_questionEditor, &QuestionEditorSubView::questionCounterChanged, this, &QuestionCreatorTabView::updatedValue);
-    connect(m_testData, &TestEditorSubView::testTimeChanged, this, &QuestionCreatorTabView::testTimeChanged);
-    connect(m_testData, &TestEditorSubView::questionCountChanged, this, &QuestionCreatorTabView::questionCountChanged);
+
+    connect(m_testData, &TestEditorSubView::testTimeChanged,             this, &QuestionCreatorTabView::testTimeChanged);
+    connect(m_testData, &TestEditorSubView::questionCountChanged,        this, &QuestionCreatorTabView::questionCountChanged);
     connect(m_testData, &TestEditorSubView::questionCountLoadedFromFile, this, &QuestionCreatorTabView::setLoadedQuestionsCount);
+
     connect(this, &QuestionCreatorTabView::updatedIndexData, m_questionEditor, &QuestionEditorSubView::updatedIndexData);
-    connect(m_testData, &TestEditorSubView::saveDataInDb, this, &QuestionCreatorTabView::saveDataInDb);
+
+    connect(m_testData, &TestEditorSubView::saveDataInDb,  this, &QuestionCreatorTabView::saveDataInDb);
     connect(m_testData, &TestEditorSubView::loadedDocFile, this, &QuestionCreatorTabView::loadDataFromDocFile);
-    connect(m_testData, &TestEditorSubView::loadedDBFile, m_dbSave, &SqlliteDbManager::loadDbFile);
-    connect(m_dbSave, &SqlliteDbManager::readTests, this, &QuestionCreatorTabView::loadTestList);
+    connect(m_testData, &TestEditorSubView::loadedDBFile,  m_dbSave, &SqlliteDbManager::loadDbFile);
+
+    connect(m_dbSave, &SqlliteDbManager::readTests,        this, &QuestionCreatorTabView::loadTestList);
     connect(m_dbSave, &SqlliteDbManager::sendFullTestData, this, &QuestionCreatorTabView::loadDataFromDBFile);
+
     connect(m_dbViewer, &DbTestViewer::chosenTest, m_dbSave, &SqlliteDbManager::loadTestDataFromDbFile);
+
     connect(this, &QuestionCreatorTabView::loadTestData, m_testData, &TestEditorSubView::loadTestFileData);
 }
 
@@ -88,7 +97,7 @@ void QuestionCreatorTabView::showSubView(SubViews view)
         m_questionEditor->show();
         break;
     case QuestionViewer:
-        m_questionsViewer->setQuestionsLost(m_data.questions);
+        m_questionsViewer->setQuestionsList(m_data.questions);
         m_questionsViewer->show();
         break;
     case DbViewer:

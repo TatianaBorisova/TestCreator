@@ -1,4 +1,5 @@
 #include "questionslistsubview.h"
+#include "stringencryption.h"
 
 #include <QPlainTextEdit>
 #include <QPushButton>
@@ -42,15 +43,15 @@ void QuestionsListSubView::setFixedSize(int w, int h)
     resize();
 }
 
-void QuestionsListSubView::setQuestionsLost(const QList<TestQuestions> &list)
+void QuestionsListSubView::setQuestionsList(const QList<TestQuestions> &list)
 {
     m_questions->clear();
 
     for (int i = 0; i < list.count(); i++) {
         m_questions->setPlainText(m_questions->toPlainText() + "\n"
-                                  + "\nВопрос: " + list.at(i).question + "\n"
-                                  + "\nВерные ответы: " + list.at(i).answers.correctAnswer + "\n"
-                                  + "\nНеверные ответы: " + list.at(i).answers.uncorrectAnswers + "\n"
+                                  + "\nВопрос: " + StringEncryption::stringDecrypt(list.at(i).question, encryptKey) + "\n"
+                                  + "\nВерные ответы: " + StringEncryption::stringDecrypt(list.at(i).answers.correctAnswer, encryptKey) + "\n"
+                                  + "\nНеверные ответы: " + StringEncryption::stringDecrypt(list.at(i).answers.uncorrectAnswers, encryptKey) + "\n"
                                   + "\nКартинка: " + list.at(i).answers.imgName + "\n");
     }
 }

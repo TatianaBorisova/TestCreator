@@ -5,12 +5,16 @@
 #include <QList>
 #include <QTime>
 
+//block consts for TCP messaging
 const int headerMsgSize = 16;
 const QString cmdMsg = QString("GETFILES");
 const QString downloadMsg = QString("DOWNLOADFILE");
 const QString newfileMsg = QString("NEWFILENAME");
 const QString newentryMsg = QString("NEWFILEENTRY");
 const int cmdSize = 8;
+
+//encryption
+const QString encryptKey = QString("test");
 
 typedef struct answers {
     QString correctAnswer;
