@@ -21,8 +21,8 @@ SettingSubView::SettingSubView(QWidget *parent) :
     m_localhost(new QLabel(this)),
     m_port(new QLineEdit(this)),
     m_serverStatus(new QLabel(this)),
-    m_testBox(new QPlainTextEdit(this)),
-    m_resultBox(new QPlainTextEdit(this)),
+    m_testBox(new QLineEdit(this)),
+    m_resultBox(new QLineEdit(this)),
     m_startBtn(new QPushButton(this)),
     m_stopBtn(new QPushButton(this)),
     m_chooseTestDb(new QPushButton(this)),
@@ -33,15 +33,17 @@ SettingSubView::SettingSubView(QWidget *parent) :
 
     connect(m_startBtn, &QPushButton::clicked, this, &SettingSubView::startServer);
     connect(m_stopBtn,  &QPushButton::clicked, m_server, &TcpServer::stopServer);
+
     connect(m_chooseTestDb, &QPushButton::clicked, this, &SettingSubView::chooseTestDB);
     connect(m_chooseResDb,  &QPushButton::clicked, this, &SettingSubView::chooseResDB);
+
+    connect(m_testBox,   &QLineEdit::editingFinished, this, &SettingSubView::testDbChangedSlot);
+    connect(m_resultBox, &QLineEdit::editingFinished, this, &SettingSubView::resultDbChangedSlot);
+
     connect(m_server, &TcpServer::serverStarted, this, &SettingSubView::setStartSetverState);
     connect(m_server, &TcpServer::closeClientConnection, this, &SettingSubView::setStopSetverState);
     connect(this, &SettingSubView::testFolderPathChanged, m_server, &TcpServer::setTestFolderPath);
     connect(this, &SettingSubView::resultDbChanged, m_server, &TcpServer::resultDbName);
-
-    m_testBox->setReadOnly(true);
-    m_resultBox->setReadOnly(true);
 
     m_testBox->setFixedHeight(btnHeight);
     m_resultBox->setFixedHeight(btnHeight);
@@ -55,8 +57,8 @@ SettingSubView::SettingSubView(QWidget *parent) :
     m_localhost->setText(QString("IP: %1").arg(m_server->serverIp()));
     m_port->setText(QString("%1").arg(QString::number(m_server->serverPort())));
 
-    m_testBox->setPlainText(QDir::current().absolutePath() + QString("/testDb"));
-    m_resultBox->setPlainText(QDir::current().absolutePath() + QString("/resultDb"));
+    m_testBox->setText(QDir::current().absolutePath() + QString("/testDb"));
+    m_resultBox->setText(QDir::current().absolutePath() + QString("/resultDb"));
 
     m_rowBox->addWidget(m_localhost);
     m_rowBox->addWidget(m_port);
@@ -77,23 +79,33 @@ SettingSubView::SettingSubView(QWidget *parent) :
 
     this->setLayout(m_grid);
 
-    emit testDbChanged(m_testBox->toPlainText());
-    emit resultDbChanged(m_resultBox->toPlainText());
+    emit testDbChanged(m_testBox->text());
+    emit resultDbChanged(m_resultBox->text());
     setStopSetverState();
 }
 
 void SettingSubView::chooseTestDB()
 {
     QString filePath = QFileDialog::getOpenFileName(this, tr("Choose Test Document"), "");
-    m_testBox->setPlainText(filePath);
+    m_testBox->setText(filePath);
     emit testDbChanged(filePath);
 }
 
 void SettingSubView::chooseResDB()
 {
     QString filePath = QFileDialog::getOpenFileName(this, tr("Choose Test Document"), "");
-    m_resultBox->setPlainText(filePath);
+    m_resultBox->setText(filePath);
     emit resultDbChanged(filePath);
+}
+
+void SettingSubView::testDbChangedSlot()
+{
+    emit testDbChanged(m_testBox->text());
+}
+
+void SettingSubView::resultDbChangedSlot()
+{
+    emit resultDbChanged(m_resultBox->text());
 }
 
 void SettingSubView::setStartSetverState()
@@ -109,12 +121,12 @@ void SettingSubView::setStopSetverState()
 
 QString SettingSubView::testDb() const
 {
-    m_testBox->toPlainText();
+    m_testBox->text();
 }
 
 QString SettingSubView::resultDb() const
 {
-    m_resultBox->toPlainText();
+    m_resultBox->text();
 }
 
 void SettingSubView::startServer()
@@ -125,8 +137,8 @@ void SettingSubView::startServer()
 
 void SettingSubView::resize()
 {
-    emit testDbChanged(m_testBox->toPlainText());
-    emit resultDbChanged(m_resultBox->toPlainText());
+    emit testDbChanged(m_testBox->text());
+    emit resultDbChanged(m_resultBox->text());
 }
 
 void SettingSubView::setFixedSize(int w, int h)

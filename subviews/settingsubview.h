@@ -9,7 +9,6 @@ class TcpServer;
 class QPushButton;
 class QLabel;
 class QLineEdit;
-class QPlainTextEdit;
 
 class SettingSubView : public TestCreatorBaseView
 {
@@ -37,6 +36,8 @@ protected:
 private slots:
     void chooseTestDB();
     void chooseResDB();
+    void testDbChangedSlot();
+    void resultDbChangedSlot();
     void setStartSetverState();
     void setStopSetverState();
 
@@ -46,8 +47,8 @@ private:
     QLabel      *m_localhost;
     QLineEdit   *m_port;
     QLabel      *m_serverStatus;
-    QPlainTextEdit   *m_testBox;
-    QPlainTextEdit   *m_resultBox;
+    QLineEdit   *m_testBox;
+    QLineEdit   *m_resultBox;
     QPushButton *m_startBtn;
     QPushButton *m_stopBtn;
     QPushButton *m_chooseTestDb;
