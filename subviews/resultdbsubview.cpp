@@ -178,16 +178,12 @@ void ResultDbSubView::saveToDocFile()
         QAxObject* pTables = pActiveDocument->querySubObject("Tables()");
         QAxObject* pNewTable = pTables->querySubObject("Add(Id, testname, firstname, secondName, surname, groupname, scorevalue, maxvalue, testtime)", pSelection->property("Range"), 1, 8, 1, 1);
 
-        //Resize table width to whole page width.
-//        pNewTable->setProperty("PreferredWidthType", "wdPreferredWidthPercent");
-//        pNewTable->setProperty("PreferredWidth", 105);
-
         //Align table to center.
         pNewTable->querySubObject("Rows()")->setProperty("Alignment", "wdAlignRowCenter");
 
         //Iterate found records.
         QAxObject *pCell = NULL, *pCellRange = NULL;
-        for(int cur_row = 0; cur_row < m_dbTable.count(); cur_row++)
+        for(int cur_row = 0; cur_row < m_dbTable.count() - 1; cur_row++) //do you know why count - 1?? :) Coz Add(data) created table with 1 row and 8 columns
         {
             //Inserting new row for each new data.
             pSelection->dynamicCall("InsertRowsBelow()");
