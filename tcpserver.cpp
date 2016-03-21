@@ -25,14 +25,16 @@ TcpServer::TcpServer(QObject *parent) :
 
 void TcpServer::startServer()
 {
-    if (!this->listen(QHostAddress::Any, m_listeningPort)) {
+    if (!this->listen(QHostAddress::AnyIPv4, m_listeningPort)) {
         QMessageBox::warning(0, "Error", QString("Unable to start the server: %1.").arg(this->errorString()));
     } else {
         QList<QHostAddress> ipAddressesList = QNetworkInterface::allAddresses();
 
         // use the first non-localhost IPv4 address
         for (int i = 0; i < ipAddressesList.size(); ++i) {
-            if (ipAddressesList.at(i) != QHostAddress::LocalHost && ipAddressesList.at(i).toIPv4Address()) {
+            if (!ipAddressesList.at(i).isNull()
+                    && ipAddressesList.at(i) != QHostAddress::LocalHost
+                    && ipAddressesList.at(i).protocol() == QAbstractSocket::IPv4Protocol) {
                 m_listeningIp = ipAddressesList.at(i).toString();
                 qDebug() << "host = "<< this->serverIp() << this->serverPort();
                 break;
