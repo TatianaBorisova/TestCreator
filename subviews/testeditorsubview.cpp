@@ -25,13 +25,13 @@ TestEditorSubView::TestEditorSubView(QWidget *parent) :
     m_saveinDb(new QPushButton("Сохранить в БД", this)),
     m_questionView(new QPushButton("Просмотреть вопросы", this))
 {
-    connect(m_addQuestions, &QPushButton::clicked, this, &TestEditorSubView::addQuestions);
-    connect(m_testNameBox, &QTextEdit::textChanged, this, &TestEditorSubView::setTestName);
-    connect(m_testTimeBox, &QTimeEdit::editingFinished, this, &TestEditorSubView::setTestTime);
+    connect(m_addQuestions, &QPushButton::clicked,   this, &TestEditorSubView::addQuestions);
+    connect(m_testNameBox,  &QTextEdit::textChanged, this, &TestEditorSubView::setTestName);
+    connect(m_testTimeBox,  &QTimeEdit::editingFinished,     this, &TestEditorSubView::setTestTime);
     connect(m_questionCountBox, &QLineEdit::editingFinished, this, &TestEditorSubView::setQuestionCount);
-    connect(m_saveinDb, &QPushButton::clicked, this, &TestEditorSubView::saveDataInDb);
-    connect(m_loadFromDoc, &QPushButton::clicked, this, &TestEditorSubView::loadDocFile);
-    connect(m_loadFromDb, &QPushButton::clicked, this, &TestEditorSubView::loadDBFile);
+    connect(m_saveinDb,         &QPushButton::clicked, this, &TestEditorSubView::saveDataInDb);
+    connect(m_loadFromDoc,  &QPushButton::clicked, this, &TestEditorSubView::loadDocFile);
+    connect(m_loadFromDb,   &QPushButton::clicked, this, &TestEditorSubView::loadDBFile);
     connect(m_questionView, &QPushButton::clicked, this, &TestEditorSubView::showQuestionsListView);
 
     m_testNameBox->setFixedHeight(50);

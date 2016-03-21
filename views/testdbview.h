@@ -34,7 +34,7 @@ protected:
 
 protected slots:
     void loadFromFolder();
-    void createNewTest();
+    void updateConsistent();
     void openExistedTest();
 
 private:

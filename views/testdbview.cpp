@@ -23,13 +23,13 @@ TestDbView::TestDbView(QWidget *parent) :
     m_hbox(new QHBoxLayout(this)),
     m_testBox(new QListWidget(this)),
     m_openTestFile(new QPushButton("Открыть тест", this)),
-    m_createTestFile(new QPushButton("Создать новый тест", this)),
+    m_createTestFile(new QPushButton("Обновить", this)),
     m_folderContainer(new QPushButton("Выбрать папку", this)),
     m_header(new QLabel("Выбранная папка:", this)),
     m_chosenFolder(new QLabel(this))
 {
     connect(m_openTestFile, &QPushButton::clicked, this, &TestDbView::openExistedTest);
-    connect(m_createTestFile, &QPushButton::clicked, this, &TestDbView::createNewTest);
+    connect(m_createTestFile, &QPushButton::clicked, this, &TestDbView::updateConsistent);
     connect(m_folderContainer, &QPushButton::clicked, this, &TestDbView::loadFromFolder);
 
     QFont wdgFont("Times", 11);
@@ -107,9 +107,29 @@ void TestDbView::setTestFolderPath(const QString &path)
     emit testFolderPathChanged(m_filePath);
 }
 
-void TestDbView::createNewTest()
+void TestDbView::updateConsistent()
 {
-    emit showView(CreatorView);
+    m_testBox->clear();
+
+    QDir chosenDir(testFolderPath());
+    QStringList allFiles = chosenDir.entryList(QDir::Files | QDir::NoDotAndDotDot);
+
+    for (int i = 0; i < allFiles.count(); i++) {
+
+        QFileInfo fileExt(allFiles.at(i));
+        QString ext = fileExt.suffix().toLower();
+
+        if (ext == ".doc" || ext == ".docx" || SqlliteDbManager::checkIfTestDb(allFiles.at(i))) {
+
+            if (!findDumlicateFile(m_testBox, allFiles.at(i))) {
+
+                QListWidgetItem *newItem = new QListWidgetItem();
+
+                newItem->setText(allFiles.at(i));
+                m_testBox->insertItem(m_testBox->count(), newItem);
+            }
+        }
+    }
 }
 
 void TestDbView::openExistedTest()
