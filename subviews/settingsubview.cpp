@@ -12,6 +12,7 @@
 namespace {
 const int btnWidth = 200;
 const int btnHeight = 50;
+const QString slash = "/";
 }
 
 SettingSubView::SettingSubView(QWidget *parent) :
@@ -21,8 +22,10 @@ SettingSubView::SettingSubView(QWidget *parent) :
     m_localhost(new QLabel(this)),
     m_port(new QLineEdit(this)),
     m_serverStatus(new QLabel(this)),
-    m_testBox(new QLineEdit(this)),
-    m_resultBox(new QLineEdit(this)),
+    m_testPathLabel(new QLabel(this)),
+    m_resultPathLabel(new QLabel(this)),
+    m_testBox(new QLineEdit("testDB", this)),
+    m_resultBox(new QLineEdit("resultDB", this)),
     m_startBtn(new QPushButton(this)),
     m_stopBtn(new QPushButton(this)),
     m_chooseTestDb(new QPushButton(this)),
@@ -57,8 +60,8 @@ SettingSubView::SettingSubView(QWidget *parent) :
     m_localhost->setText(QString("IP: %1").arg(m_server->serverIp()));
     m_port->setText(QString("%1").arg(QString::number(m_server->serverPort())));
 
-    m_testBox->setText(QDir::current().absolutePath() + QString("/testDb"));
-    m_resultBox->setText(QDir::current().absolutePath() + QString("/resultDb"));
+    m_testPathLabel->setText(QDir::current().absolutePath() + slash);
+    m_resultPathLabel->setText(QDir::current().absolutePath() + slash);
 
     m_rowBox->addWidget(m_localhost);
     m_rowBox->addWidget(m_port);
@@ -69,8 +72,17 @@ SettingSubView::SettingSubView(QWidget *parent) :
     m_grid->addWidget(m_stopBtn, 1, 1);
     m_grid->addWidget(m_serverStatus, 1, 0);
 
-    m_grid->addWidget(m_testBox, 2, 0);
-    m_grid->addWidget(m_resultBox, 3, 0);
+    QHBoxLayout *testRow = new QHBoxLayout();
+    QHBoxLayout *resultRow = new QHBoxLayout();
+
+    testRow->addWidget(m_testPathLabel);
+    testRow->addWidget(m_testBox);
+
+    resultRow->addWidget(m_resultPathLabel);
+    resultRow->addWidget(m_resultBox);
+
+    m_grid->addLayout(testRow, 2, 0);
+    m_grid->addLayout(resultRow, 3, 0);
     m_grid->addWidget(m_chooseTestDb, 2, 1);
     m_grid->addWidget(m_chooseResDb, 3, 1);
 
@@ -79,8 +91,8 @@ SettingSubView::SettingSubView(QWidget *parent) :
 
     this->setLayout(m_grid);
 
-    emit testDbChanged(m_testBox->text());
-    emit resultDbChanged(m_resultBox->text());
+    emit testDbChanged(m_testPathLabel->text() + m_testBox->text());
+    emit resultDbChanged(m_resultPathLabel->text() + m_resultBox->text());
 
     m_server->startServer();
     setStartSetverState();
@@ -88,26 +100,26 @@ SettingSubView::SettingSubView(QWidget *parent) :
 
 void SettingSubView::chooseTestDB()
 {
-    QString filePath = QFileDialog::getOpenFileName(this, tr("Choose Test Document"), "");
-    m_testBox->setText(filePath);
-    emit testDbChanged(filePath);
+    QString filePath = QFileDialog::getExistingDirectory(this, tr("Choose Test Directory"), "");
+    m_testPathLabel->setText(filePath + slash);
+    emit testDbChanged(filePath + m_testBox->text());
 }
 
 void SettingSubView::chooseResDB()
 {
-    QString filePath = QFileDialog::getOpenFileName(this, tr("Choose Test Document"), "");
-    m_resultBox->setText(filePath);
-    emit resultDbChanged(filePath);
+    QString filePath = QFileDialog::getExistingDirectory(this, tr("Choose Result Directory"), "");
+    m_resultPathLabel->setText(filePath + slash);
+    emit resultDbChanged(filePath + m_resultBox->text());
 }
 
 void SettingSubView::testDbChangedSlot()
 {
-    emit testDbChanged(m_testBox->text());
+    emit testDbChanged(m_testPathLabel->text() + m_testBox->text());
 }
 
 void SettingSubView::resultDbChangedSlot()
 {
-    emit resultDbChanged(m_resultBox->text());
+    emit resultDbChanged(m_resultPathLabel->text() + m_resultBox->text());
 }
 
 void SettingSubView::setStartSetverState()
@@ -139,8 +151,8 @@ void SettingSubView::startServer()
 
 void SettingSubView::resize()
 {
-    emit testDbChanged(m_testBox->text());
-    emit resultDbChanged(m_resultBox->text());
+    emit testDbChanged(m_testPathLabel->text() + m_testBox->text());
+    emit resultDbChanged(m_resultPathLabel->text() + m_resultBox->text());
 }
 
 void SettingSubView::setFixedSize(int w, int h)

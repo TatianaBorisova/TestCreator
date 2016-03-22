@@ -47,6 +47,8 @@ private:
     QLabel      *m_localhost;
     QLineEdit   *m_port;
     QLabel      *m_serverStatus;
+    QLabel      *m_testPathLabel;
+    QLabel      *m_resultPathLabel;
     QLineEdit   *m_testBox;
     QLineEdit   *m_resultBox;
     QPushButton *m_startBtn;
