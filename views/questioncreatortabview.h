@@ -27,6 +27,7 @@ public slots:
     void testDbChanged(const QString &dbname);
     void testNameChanged(const QString &name);
     void testTimeChanged(const QTime &time);
+    void testTypeChanged(int type);
     void questionCountChanged(int value);
     void insertQuestion(const TestQuestions &test, int index);
     void updatedValue(int index);

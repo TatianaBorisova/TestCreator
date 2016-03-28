@@ -24,6 +24,7 @@ signals:
 public slots:
     void createTestTables(const QString &dbName);
     void createResultTable(const QString &dbName);
+
     void saveStudentResultToDb(const QString &db, const StudentResult &result);
     void saveTestToDb(const QString &dbName, const TestData &result);
 

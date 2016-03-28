@@ -9,6 +9,7 @@ class QPushButton;
 class QGridLayout;
 class QTimeEdit;
 class QTextEdit;
+class QComboBox;
 
 class TestEditorSubView : public TestCreatorBaseView
 {
@@ -17,13 +18,10 @@ public:
     explicit TestEditorSubView(QWidget *parent = 0);
     void setFixedSize(int w, int h);
 
-    void setTestName();
-    void setTestTime();
-    void setQuestionCount();
-
 signals:
     void testNameChanged(const QString &name);
     void testTimeChanged(const QTime &time);
+    void testTypeChanged(int type);
     void questionCountChanged(int value);
     void saveDataInDb();
     void loadedDocFile(const QString &filename);
@@ -37,6 +35,11 @@ protected:
     virtual void resize();
 
 private slots:
+    void setTestName();
+    void setTestTime();
+    void setTestType(int index);
+    void setQuestionCount();
+
     void addQuestions();
     void loadDocFile();
     void loadDBFile();
@@ -46,9 +49,11 @@ private:
     QGridLayout *m_box;
     QLabel *m_testName;
     QLabel *m_testTime;
+    QLabel *m_testType;
     QLabel *m_questionCount;
     QTextEdit *m_testNameBox;
     QTimeEdit *m_testTimeBox;
+    QComboBox *m_testTypeBox;
     QLineEdit *m_questionCountBox;
     QPushButton *m_addQuestions;
     QPushButton *m_loadFromDoc;

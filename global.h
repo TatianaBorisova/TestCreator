@@ -54,9 +54,15 @@ typedef struct questions {
     Answers answers;
 } TestQuestions;
 
+enum TestType {
+    StatementTest = 0,
+    QuestionTest
+};
+
 typedef struct testSt {
     int id;
     QString testName;
+    TestType testType;
     QTime testTime;
     int questionCount;
     QList<TestQuestions> questions;
@@ -79,6 +85,7 @@ enum SubViews {
 typedef struct testHeader {
     int id;
     QString testName;
+    TestType testType;
     QTime testTime;
     int questionCount;
 } TestHeaderData;

@@ -101,7 +101,11 @@ void QuestionEditorSubView::updatedIndexData(const TestQuestions &test)
     m_correctAnswerBox->setPlainText(StringEncryption::stringDecrypt(test.answers.correctAnswer, encryptKey));
     m_incorrectAnswerBox->setPlainText(StringEncryption::stringDecrypt(test.answers.uncorrectAnswers, encryptKey));
     m_filepath = test.answers.imgName;
-    if (!m_filepath.isEmpty()) {
+    if (test.answers.image.count() > 0) {
+        QPixmap pixmap;
+        pixmap.loadFromData(test.answers.image);
+        m_image->setPixmap(pixmap.scaled(m_image->height(), m_image->height()));
+    } else if (!m_filepath.isEmpty()) {
         m_image->setPixmap(QPixmap(m_filepath).scaled(m_image->width(), m_image->height()));
     }
 }
@@ -120,12 +124,9 @@ void QuestionEditorSubView::back()
 
     //if first or last element - return to TEST view
     if (questionCounter() == 0 /*|| questionCounter() == m_questionMax - 1*/) {
-
         setQuestionCounter(0);
         emit showSubView(TestEditor);
-
     } else {
-
         //else go to previous question entry
         setQuestionCounter(questionCounter() - 1);
     }

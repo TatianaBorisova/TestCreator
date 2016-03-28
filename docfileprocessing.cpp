@@ -11,6 +11,7 @@
 
 namespace {
 const QString header = QString("название:");
+const QString testType = QString("тип теста:");
 const QString doingTime = QString("время выполнения:");
 const QString questionCount = QString("количество вопросов:");
 const QString correctAnswer = QString("верный ответ:");
@@ -31,38 +32,6 @@ DocFileProcessing::DocFileProcessing(QObject *parent) :
 {
 }
 
-void DocFileProcessing::readFromDocSet(const QString &filename, QWidget *parent)
-{
-    if (!filename.isEmpty()) {
-        if (m_wordApp)
-            delete m_wordApp;
-
-        setSavingFileName(filename);
-        m_docTextString.clear();
-        m_testList.clear();
-
-        m_wordApp = new QAxWidget("Word.Application", parent);
-        m_wordApp->setGeometry(parent->rect());
-        m_wordApp->setControl(filename);
-
-        QAxObject *words = m_wordApp->querySubObject("Words");
-        int countWord = words->dynamicCall("Count()").toInt();
-
-        for (int a = 1; a <= countWord; a++){
-            m_docTextString += QString(words->querySubObject("Item(int)", a)->dynamicCall("Text()").toString()).toLower();
-        }
-
-        QString statementStr("");
-        while(!(statementStr = getStatementString()).isEmpty()) {
-            m_testList.append(statementStr);
-        }
-
-        for (int i = 0; i < m_testList.count(); i++) {
-            fillTestQuestionInfo(m_testList.at(i));
-        }
-    }
-}
-
 TestData DocFileProcessing::readFromDocFile(const QString &filename, QWidget *parent)
 {
     m_loadedData.questions.clear();
@@ -72,7 +41,6 @@ TestData DocFileProcessing::readFromDocFile(const QString &filename, QWidget *pa
 
     if (!filename.isEmpty()) {
 
-        setSavingFileName(filename);
         clearData();
 
         m_wordApp = new QAxWidget("Word.Application", parent);
@@ -83,7 +51,7 @@ TestData DocFileProcessing::readFromDocFile(const QString &filename, QWidget *pa
         int countWord = words->dynamicCall("Count()").toInt();
 
         for (int a = 1; a <= countWord; a++){
-            m_docTextString += QString(words->querySubObject("Item(int)", a)->dynamicCall("Text()").toString()).toLower();
+            m_docTextString += QString(words->querySubObject("Item(int)", a)->dynamicCall("Text()").toString());
         }
 
         takeTestHeaderInfo();
@@ -99,7 +67,7 @@ TestData DocFileProcessing::readFromDocFile(const QString &filename, QWidget *pa
 
         for (int i = 0; i < m_statementList.count(); i++) {
             TestQuestions question;
-            question.question = StringEncryption::stringEncrypt(addUpperSymbol(m_statementList.at(i)), encryptKey);
+            question.question = StringEncryption::stringEncrypt(m_statementList.at(i), encryptKey);
             question.weight   = 1;
             question.answers.correctAnswer    = StringEncryption::stringEncrypt(m_answerList.at(i).correctAnswer, encryptKey);
             question.answers.uncorrectAnswers = StringEncryption::stringEncrypt(m_answerList.at(i).uncorrectAnswers, encryptKey);
@@ -111,60 +79,11 @@ TestData DocFileProcessing::readFromDocFile(const QString &filename, QWidget *pa
     return m_loadedData;
 }
 
-QString DocFileProcessing::generateJsonTestFile() const
-{
-    qDebug() << "generateTestFile";
-
-    QDir dir = QDir::current();
-    dir.mkdir(m_testFileName);
-    //    dir.cd(m_testFileName);
-
-    QString testSubDir = m_testFileName + "/";
-    //TBD dont forget about linux path
-    QFile file(testSubDir + m_testFileName + ".json");
-    if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
-        return "";
-    }
-
-    QTextStream out(&file);
-    out << startFileBrace;
-    out << arrayDeclare;
-
-    for (int i = 0; i < m_statementList.count(); i++) {
-        //if last one
-        if (i == m_statementList.count() - 1)
-            out << jsonString.arg(StringEncryption::stringEncrypt(m_statementList.at(i), encryptKey))
-                   .arg(StringEncryption::stringEncrypt(m_answerList.at(i).correctAnswer, encryptKey))
-                   .arg(StringEncryption::stringEncrypt(m_answerList.at(i).uncorrectAnswers, encryptKey))
-                   .arg(StringEncryption::stringEncrypt(m_answerList.at(i).imgName, encryptKey));
-        else
-            out << jsonString.arg(StringEncryption::stringEncrypt(m_statementList.at(i), encryptKey))
-                   .arg(StringEncryption::stringEncrypt(m_answerList.at(i).correctAnswer, encryptKey))
-                   .arg(StringEncryption::stringEncrypt(m_answerList.at(i).uncorrectAnswers, encryptKey))
-                   .arg(StringEncryption::stringEncrypt(m_answerList.at(i).imgName, encryptKey)) << comma;
-
-        //if img exists lets copy it to test directory
-        if (!m_answerList.at(i).imgName.isEmpty()) {
-
-            QString imgPath = m_answerList.at(i).imgName;
-            imgPath = imgPath.replace(" ", "");
-
-            if (!QFile::copy(QDir::currentPath() + "/" + imgPath, testSubDir + imgPath))
-                QMessageBox::warning(0, "Error", "Ошибка. Не найден файл:\n" + imgPath);
-        }
-    }
-
-    out << closeBrace;
-    file.close();
-
-    return QDir::current().absoluteFilePath(file.fileName());
-}
-
 void DocFileProcessing::fillTestQuestionInfo(QString str)
 {
-    int correctAnswerIndx = str.indexOf(correctAnswer);
-    int incorrectAnswerIndx = str.indexOf(incorrectAnswer);
-    int imgPathIndx = str.indexOf(picturePath);
+    int correctAnswerIndx = str.indexOf(correctAnswer, 0, Qt::CaseInsensitive);
+    int incorrectAnswerIndx = str.indexOf(incorrectAnswer, 0, Qt::CaseInsensitive);
+    int imgPathIndx = str.indexOf(picturePath, 0, Qt::CaseInsensitive);
 
     if (correctAnswerIndx < 0) {
         QMessageBox::warning(0, "Error", "Ошибка. Не найден верный вариант\nответа в блоке:\n" + str);
@@ -230,8 +149,8 @@ QString DocFileProcessing::getTestNameString(const QString &filetext)
     QString result("");
     QString text = filetext;
 
-    int startInd = text.lastIndexOf(header);
-    int endInd = text.lastIndexOf(doingTime);
+    int startInd = text.lastIndexOf(header, 0, Qt::CaseInsensitive);
+    int endInd = text.indexOf(testType, 0, Qt::CaseInsensitive);
 
     if (startInd != -1) {
         result = text.mid(startInd + header.count(), endInd - (startInd + header.count()));
@@ -245,11 +164,26 @@ QString DocFileProcessing::getTestTimeString(const QString &filetext)
     QString result("");
     QString text = filetext;
 
-    int startInd = text.indexOf(doingTime);
-    int endInd = text.indexOf(questionCount);
+    int startInd = text.indexOf(doingTime, 0, Qt::CaseInsensitive);
+    int endInd = text.indexOf(questionCount, 0, Qt::CaseInsensitive);
 
     if (startInd != -1) {
         result = text.mid(startInd + doingTime.count(), endInd - (startInd + doingTime.count()));
+    }
+
+    return clearStatementString(result);
+}
+
+QString DocFileProcessing::getTestTypeString(const QString &filetext)
+{
+    QString result("");
+    QString text = filetext;
+
+    int startInd = text.indexOf(testType, 0, Qt::CaseInsensitive);
+    int endInd = text.indexOf(doingTime, 0, Qt::CaseInsensitive);
+
+    if (startInd != -1) {
+        result = text.mid(startInd + testType.count(), endInd - (startInd + testType.count()));
     }
 
     return clearStatementString(result);
@@ -260,8 +194,8 @@ QString DocFileProcessing::getQuestCountString(const QString &filetext)
     QString result("");
     QString text = filetext;
 
-    int startInd = text.indexOf(questionCount);
-    int endInd = text.indexOf(statement);
+    int startInd = text.indexOf(questionCount, 0, Qt::CaseInsensitive);
+    int endInd = text.indexOf(statement, 0, Qt::CaseInsensitive);
 
     if (startInd != -1) {
         result = text.mid(startInd + questionCount.count(), endInd - (startInd + questionCount.count()));
@@ -275,15 +209,15 @@ QString DocFileProcessing::getStatementString()
     QString result("");
     int firstIndex = -1;
 
-    if ((firstIndex = m_docTextString.indexOf(statement + " : ")) >= 0) {
+    if ((firstIndex = m_docTextString.indexOf(statement + " : ", 0, Qt::CaseInsensitive)) >= 0) {
         result = firstTestString(firstIndex, statement + " : ");
-    } else if ((firstIndex = m_docTextString.indexOf(statement + " :")) >= 0) {
+    } else if ((firstIndex = m_docTextString.indexOf(statement + " :", 0, Qt::CaseInsensitive)) >= 0) {
         result = firstTestString(firstIndex, statement + " :");
-    } else if ((firstIndex = m_docTextString.indexOf(statement + ": ")) >= 0) {
+    } else if ((firstIndex = m_docTextString.indexOf(statement + ": ", 0, Qt::CaseInsensitive)) >= 0) {
         result = firstTestString(firstIndex, statement + ": ");
-    } else if ((firstIndex = m_docTextString.indexOf(statement + ":")) >= 0) {
+    } else if ((firstIndex = m_docTextString.indexOf(statement + ":", 0, Qt::CaseInsensitive)) >= 0) {
         result = firstTestString(firstIndex, statement + ":");
-    } else if ((firstIndex = m_docTextString.indexOf(statement)) >= 0) {
+    } else if ((firstIndex = m_docTextString.indexOf(statement, 0, Qt::CaseInsensitive)) >= 0) {
         result = firstTestString(firstIndex, statement);
     }
     return result;
@@ -295,7 +229,7 @@ QString DocFileProcessing::firstTestString(int firstIndex, QString readStatement
 
     m_docTextString = m_docTextString.remove(firstIndex, readStatement.size());
 
-    int secondIndex = m_docTextString.indexOf(readStatement);
+    int secondIndex = m_docTextString.indexOf(readStatement, 0, Qt::CaseInsensitive);
     if (secondIndex >= 0) {
         result = m_docTextString.left(secondIndex);
         m_docTextString = m_docTextString.remove(result);
@@ -304,14 +238,6 @@ QString DocFileProcessing::firstTestString(int firstIndex, QString readStatement
     }
 
     return result;
-}
-
-QString DocFileProcessing::clearAnswerString(const QString &str)
-{
-    QRegExp regExp("[:\",.;. / \r\n]");
-    QString result = str;
-
-    return result.remove(regExp);
 }
 
 QString DocFileProcessing::clearStatementString(const QString &str)
@@ -339,54 +265,15 @@ void DocFileProcessing::printReadData()
     }
 }
 
-void DocFileProcessing::setSavingFileName(const QString &file)
-{
-    m_testFileName.clear();
-    m_testFileName = getFileName(file);
-}
-
-QString DocFileProcessing::getFileName(const QString &file, bool withFileExtention) const
-{
-    QString fillName("");
-    if (!file.isEmpty()) {
-
-        //TBD: dont forget about linux file path
-        int lastSlashIndx = file.lastIndexOf("/");
-        int lastPointIndx = file.lastIndexOf(".");
-
-        QFile realfile(file);
-        if (realfile.exists()) {
-            if (!withFileExtention)
-                fillName = file.mid(lastSlashIndx + 1, lastPointIndx - (lastSlashIndx + 1));
-            else
-                fillName = file.right(file.count() - lastSlashIndx);
-        }
-    }
-
-    return fillName;
-}
-
 void DocFileProcessing::takeTestHeaderInfo()
 {
-    m_loadedData.testName = addUpperSymbol(getTestNameString(m_docTextString));
+    m_loadedData.testName = getTestNameString(m_docTextString);
+    m_loadedData.testType = (TestType)getTestTypeString(m_docTextString).toInt();
     m_loadedData.testTime = QTime::fromString(getTestTimeString(m_docTextString), "hh:mm");
     m_loadedData.questionCount = getQuestCountString(m_docTextString).toInt();
 
-    int testHeaderStart = m_docTextString.indexOf(header);
-    int testHeaderEnd = m_docTextString.indexOf(statement);
+    int testHeaderStart = m_docTextString.indexOf(header, 0, Qt::CaseInsensitive);
+    int testHeaderEnd = m_docTextString.indexOf(statement, 0, Qt::CaseInsensitive);
 
     m_docTextString = m_docTextString.remove(testHeaderStart, testHeaderEnd);
-}
-
-QString DocFileProcessing::addUpperSymbol(const QString &str)
-{
-    QString firstSymbol("");
-    QString result = str;
-
-    if (!result.isEmpty()) {
-        firstSymbol = result.at(0).toUpper();
-        result = result.remove(0, 1);
-        result = firstSymbol + result;
-    }
-    return result;
 }

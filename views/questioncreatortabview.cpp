@@ -29,6 +29,7 @@ QuestionCreatorTabView::QuestionCreatorTabView(QWidget *parent) :
     connect(m_testData,       &TestEditorSubView::testNameChanged,            this, &QuestionCreatorTabView::testNameChanged);
     connect(m_questionEditor, &QuestionEditorSubView::questionCounterChanged, this, &QuestionCreatorTabView::updatedValue);
 
+    connect(m_testData, &TestEditorSubView::testTypeChanged,             this, &QuestionCreatorTabView::testTypeChanged);
     connect(m_testData, &TestEditorSubView::testTimeChanged,             this, &QuestionCreatorTabView::testTimeChanged);
     connect(m_testData, &TestEditorSubView::questionCountChanged,        this, &QuestionCreatorTabView::questionCountChanged);
     connect(m_testData, &TestEditorSubView::questionCountLoadedFromFile, this, &QuestionCreatorTabView::setLoadedQuestionsCount);
@@ -119,25 +120,26 @@ void QuestionCreatorTabView::loadTestList(const QList<TestHeaderData> &list)
 
 void QuestionCreatorTabView::testDbChanged(const QString &dbname)
 {
-    qDebug() << "changed to " << dbname;
     m_dbName = dbname;
 }
 
 void QuestionCreatorTabView::testNameChanged(const QString &name)
 {
-    qDebug() << "changed to " << name;
     m_data.testName = name;
 }
 
 void QuestionCreatorTabView::testTimeChanged(const QTime &time)
 {
-    qDebug() << "changed to " << time;
     m_data.testTime = time;
+}
+
+void QuestionCreatorTabView::testTypeChanged(int type)
+{
+    m_data.testType = (TestType)type;
 }
 
 void QuestionCreatorTabView::questionCountChanged(int value)
 {
-    qDebug() << "changed to " << value;
     m_data.questionCount = value;
     m_data.questions.clear();
 

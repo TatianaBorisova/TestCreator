@@ -114,9 +114,10 @@ void SqlliteDbManager::saveTestToDb(const QString &dbName, const TestData &resul
 
     // insert new test data
     QSqlQuery q_insert(dbPtr);
-    q_insert.prepare("INSERT INTO testdata (testname, testtime, questioncount) VALUES ( :testname, :testtime, :questioncount)");
+    q_insert.prepare("INSERT INTO testdata (testname, testtype, testtime, questioncount) VALUES ( :testname, :testtype, :testtime, :questioncount)");
 
     q_insert.bindValue(":testname", result.testName);
+    q_insert.bindValue(":testtype", result.testType);
     q_insert.bindValue(":testtime", result.testTime);
     q_insert.bindValue(":questioncount", result.questionCount);
 
@@ -189,7 +190,7 @@ void SqlliteDbManager::createTestTables(const QString &dbName)
         }
 
         // create a table in the memory DB
-        QSqlQuery q_testcreate = dbPtr.exec("CREATE TABLE testdata (id integer primary key autoincrement, testname varchar(255), testtime TIME, questioncount int)");
+        QSqlQuery q_testcreate = dbPtr.exec("CREATE TABLE testdata (id integer primary key autoincrement, testname varchar(255), testtype int, testtime TIME, questioncount int)");
         qDebug() << "create: " << q_testcreate.lastError();
 
 
@@ -244,6 +245,7 @@ void SqlliteDbManager::loadTestDataFromDbFile(const QString &testName)
         while (q_existed.next()) {
             data.id            = q_existed.value(q_existed.record().indexOf("id")).toInt();
             data.testName      = q_existed.value(q_existed.record().indexOf("testname")).toString();
+            data.testType      = (TestType)q_existed.value(q_existed.record().indexOf("testtype")).toInt();
             data.testTime      = q_existed.value(q_existed.record().indexOf("testtime")).toTime();
             data.questionCount = q_existed.value(q_existed.record().indexOf("questioncount")).toInt();
         }
@@ -296,6 +298,7 @@ void SqlliteDbManager::loadDbFile(const QString &filename)
             TestHeaderData testData;
             testData.id            = q_existed.value(q_existed.record().indexOf("id")).toInt();
             testData.testName      = q_existed.value(q_existed.record().indexOf("testname")).toString();
+            testData.testType      = (TestType)q_existed.value(q_existed.record().indexOf("testtype")).toInt();
             testData.testTime      = q_existed.value(q_existed.record().indexOf("testtime")).toTime();
             testData.questionCount = q_existed.value(q_existed.record().indexOf("questioncount")).toInt();
             list.append(testData);

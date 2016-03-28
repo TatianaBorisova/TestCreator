@@ -15,32 +15,28 @@ public:
     explicit DocFileProcessing(QObject *parent = 0);
 
     TestData readFromDocFile(const QString &filename, QWidget *parent);
-    void readFromDocSet(const QString &filename, QWidget *parent);
 
-    QString generateJsonTestFile() const;
+private:
     void clearData();
     void printReadData();
 
-private:
     QString getStatementString();
     QString getTestNameString(const QString &filetext);
     QString getTestTimeString(const QString &filetext);
+    QString getTestTypeString(const QString &filetext);
     QString getQuestCountString(const QString &filetext);
+
     QString firstTestString(int firstIndex, QString readStatement);
-    QString clearAnswerString(const QString &str);
     QString clearStatementString(const QString &str);
+
     void fillTestQuestionInfo(QString str);
-    void setSavingFileName(const QString &file);
     void takeTestHeaderInfo();
-    QString getFileName(const QString &file, bool withFileExtention = false) const;
-    QString addUpperSymbol(const QString &str);
 
     QStringList     m_testList;
     QStringList     m_statementList;
     QList <Answers> m_answerList;
     QString         m_docTextString;
     QAxWidget      *m_wordApp;
-    QString         m_testFileName;
     TestData        m_loadedData;
 };
 
