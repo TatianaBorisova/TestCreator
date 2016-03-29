@@ -13,6 +13,7 @@ const QString newfileMsg = QString("NEWFILENAME");
 const QString newentryMsg = QString("NEWFILEENTRY");
 const int cmdSize = 8;
 
+const QString testTypeStr = QString("Утверждения");
 //encryption
 const QString encryptKey = QString("test");
 
@@ -55,6 +56,7 @@ typedef struct questions {
 } TestQuestions;
 
 enum TestType {
+    NoTypeTest = -1,
     StatementTest = 0,
     QuestionTest
 };
@@ -84,10 +86,10 @@ enum SubViews {
 
 typedef struct testHeader {
     int id;
-    QString testName;
+    QString  testName;
     TestType testType;
-    QTime testTime;
-    int questionCount;
+    QTime    testTime;
+    int      questionCount;
 } TestHeaderData;
 
 #endif // GLOBAL

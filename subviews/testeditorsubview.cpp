@@ -72,6 +72,7 @@ void TestEditorSubView::loadTestFileData(const TestData &data)
     m_testNameBox->setText(data.testName);
     m_testTimeBox->setTime(data.testTime);
     m_questionCountBox->setText(QString::number(data.questionCount));
+    m_testTypeBox->setCurrentIndex(data.testType);
     emit questionCountLoadedFromFile(m_questionCountBox->text().toInt());
 }
 

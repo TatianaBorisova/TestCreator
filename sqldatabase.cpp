@@ -245,7 +245,13 @@ void SqlliteDbManager::loadTestDataFromDbFile(const QString &testName)
         while (q_existed.next()) {
             data.id            = q_existed.value(q_existed.record().indexOf("id")).toInt();
             data.testName      = q_existed.value(q_existed.record().indexOf("testname")).toString();
-            data.testType      = (TestType)q_existed.value(q_existed.record().indexOf("testtype")).toInt();
+
+            QString testType = q_existed.value(q_existed.record().indexOf("testtype")).toString();
+            if (testType.contains(testTypeStr))
+                data.testType = StatementTest;
+            else
+                data.testType = QuestionTest;
+
             data.testTime      = q_existed.value(q_existed.record().indexOf("testtime")).toTime();
             data.questionCount = q_existed.value(q_existed.record().indexOf("questioncount")).toInt();
         }
@@ -298,7 +304,13 @@ void SqlliteDbManager::loadDbFile(const QString &filename)
             TestHeaderData testData;
             testData.id            = q_existed.value(q_existed.record().indexOf("id")).toInt();
             testData.testName      = q_existed.value(q_existed.record().indexOf("testname")).toString();
-            testData.testType      = (TestType)q_existed.value(q_existed.record().indexOf("testtype")).toInt();
+
+            QString testType = q_existed.value(q_existed.record().indexOf("testtype")).toString();
+            if (testType.contains(testTypeStr))
+                testData.testType = StatementTest;
+            else
+                testData.testType = QuestionTest;
+
             testData.testTime      = q_existed.value(q_existed.record().indexOf("testtime")).toTime();
             testData.questionCount = q_existed.value(q_existed.record().indexOf("questioncount")).toInt();
             list.append(testData);

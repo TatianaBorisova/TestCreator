@@ -268,7 +268,13 @@ void DocFileProcessing::printReadData()
 void DocFileProcessing::takeTestHeaderInfo()
 {
     m_loadedData.testName = getTestNameString(m_docTextString);
-    m_loadedData.testType = (TestType)getTestTypeString(m_docTextString).toInt();
+
+    QString testType = getTestTypeString(m_docTextString);
+    if (testType.contains(testTypeStr))
+        m_loadedData.testType = StatementTest;
+    else
+        m_loadedData.testType = QuestionTest;
+
     m_loadedData.testTime = QTime::fromString(getTestTimeString(m_docTextString), "hh:mm");
     m_loadedData.questionCount = getQuestCountString(m_docTextString).toInt();
 
