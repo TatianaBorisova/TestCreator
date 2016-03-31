@@ -67,7 +67,34 @@ void SqlliteDbManager::saveStudentResultToDb(const QString &db, const StudentRes
         q_insert.bindValue(":maxvalue",   result.maxPosibleScore);
         q_insert.bindValue(":testtime",   QDateTime::currentDateTime());
 
-        qDebug() << "insert data row: " << q_insert.exec() << q_insert.lastError();
+        q_insert.exec();
+
+        QSqlQuery q_existed(dbPtr);
+        q_existed.prepare("SELECT id FROM studentresults WHERE testname=:testname AND firstname=:firstname AND secondName=:secondName AND surname=:surname AND groupname=:groupname");
+        q_existed.bindValue(":testname",   result.testName);
+        q_existed.bindValue(":firstname",  result.firstName);
+        q_existed.bindValue(":secondName", result.secondName);
+        q_existed.bindValue(":surname",    result.surname);
+        q_existed.bindValue(":groupname",  result.group);
+
+        if (q_existed.exec()) {
+            while (q_existed.next()) {
+                int resID = q_existed.value(q_existed.record().indexOf("id")).toInt();
+
+                for (int i = 0; i < result.answerInfo.count(); i++) {
+                    QSqlQuery q_fullinfo(dbPtr);
+                    q_fullinfo.prepare("INSERT INTO studentresultanswers (resultid, statement, chosenvar, assuarance, iscorrect) "
+                                       "VALUES (:resultid, :statement, :chosenvar, :assuarance, :iscorrect)");
+                    q_fullinfo.bindValue(":resultid",   resID);
+                    q_fullinfo.bindValue(":statement",  result.answerInfo.at(i).statement);
+                    q_fullinfo.bindValue(":chosenvar",  result.answerInfo.at(i).chosenAnswer);
+                    q_fullinfo.bindValue(":assuarance", result.answerInfo.at(i).assurance);
+                    q_fullinfo.bindValue(":iscorrect",  result.answerInfo.at(i).isCorrectAnswer);
+
+                    q_fullinfo.exec();
+                }
+            }
+        }
     }
 
     dbPtr.close();
@@ -215,8 +242,14 @@ void SqlliteDbManager::createResultTable(const QString &dbName)
         return;
     }
 
+    //create test result
     QSqlQuery q_testcreate = dbPtr.exec("CREATE TABLE studentresults (id integer primary key autoincrement, testname varchar(255), firstname varchar(255), secondName varchar(255), surname varchar(255), groupname varchar(255), scorevalue int, maxvalue int, testtime datetime)");
     qDebug() << "create: " << q_testcreate.lastError();
+
+    //create full answers
+    QSqlQuery q_testanswers = dbPtr.exec("CREATE TABLE studentresultanswers (id integer primary key autoincrement, resultid int, statement varchar(255), chosenvar varchar(255), assuarance int, iscorrect int)");
+    qDebug() << "create: " << q_testanswers.lastError();
+
 
     dbPtr.close();
 }

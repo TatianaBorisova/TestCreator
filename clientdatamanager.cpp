@@ -100,6 +100,14 @@ void ClientDataManager::saveTestResultInDbMsg(const QString &str)
              << clientParcedData.score
              << clientParcedData.maxPosibleScore;
 
+    qDebug() << "answers count = " << clientParcedData.answerInfo.count();
+    for (int i = 0; i < clientParcedData.answerInfo.count(); i ++) {
+        qDebug() << clientParcedData.answerInfo.at(i).assurance
+                 << clientParcedData.answerInfo.at(i).chosenAnswer
+                 << clientParcedData.answerInfo.at(i).isCorrectAnswer
+                 << clientParcedData.answerInfo.at(i).statement;
+    }
+
     emit saveResultToDataBase(m_resultDbName, clientParcedData);
 }
 
@@ -125,6 +133,9 @@ void ClientDataManager::processRequestDownloadFileMsg(const QString &str)
             if (file.open(QIODevice::ReadOnly))
                 bytes = file.readAll();
 
+            qDebug() << "FILE SIZE = " << file.size();
+            qDebug() << "bytes SIZE = " << bytes.size();
+
             int lastSlashIndx = filename.lastIndexOf("/");
             int lastPointIndx = filename.lastIndexOf(".");
 
@@ -147,6 +158,15 @@ StudentResult ClientDataManager::fillResultStructure(const QStringList &dataList
         result.group           = dataList.at(4);
         result.score           = dataList.at(5).toInt();
         result.maxPosibleScore = dataList.at(6).toInt();
+
+        for (int i = 7; i < dataList.count(); i += 4) {
+            AnswersVector vector;
+            vector.statement       = dataList.at(i);
+            vector.chosenAnswer    = dataList.at(i + 1);
+            vector.isCorrectAnswer = dataList.at(i + 2).toInt();
+            vector.assurance       = dataList.at(i + 3).toInt();
+            result.answerInfo.append(vector);
+        }
     }
 
     return result;

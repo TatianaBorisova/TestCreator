@@ -32,7 +32,8 @@ typedef struct test{
 
 typedef struct answersinfo {
     QString statement;
-    bool isCorrectAnswer;
+    QString chosenAnswer;
+    int isCorrectAnswer;
     int assurance;
 } AnswersVector;
 
