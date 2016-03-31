@@ -66,6 +66,11 @@ TestData DocFileProcessing::readFromDocFile(const QString &filename, QWidget *pa
         }
 
         for (int i = 0; i < m_statementList.count(); i++) {
+            if (m_statementList.at(i).isEmpty())
+                QMessageBox::warning(0, "Error", QString("Ошибка чтения документа. "
+                                                         "В выбранном документе не заполнено Утверждение %1. "
+                                                         "Поправьте документ и перезагрузите.").arg(QString::number(i + 1)));
+
             TestQuestions question;
             question.question = StringEncryption::stringEncrypt(m_statementList.at(i), encryptKey);
             question.weight   = 1;
@@ -267,7 +272,10 @@ void DocFileProcessing::printReadData()
 
 void DocFileProcessing::takeTestHeaderInfo()
 {
-    m_loadedData.testName = getTestNameString(m_docTextString);
+    if ((m_loadedData.testName = getTestNameString(m_docTextString)).isEmpty()) {
+        QMessageBox::warning(0, "Error", "Ошибка. В выбранном документе не найдено название теста.\nПожалуйста, заполните поле названия теста.");
+        return;
+    }
 
     QString testType = getTestTypeString(m_docTextString);
     if (testType.contains(testTypeStr))
