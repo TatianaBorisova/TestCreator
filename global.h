@@ -31,6 +31,7 @@ typedef struct test{
 } TestStructure ;
 
 typedef struct answersinfo {
+    int     id;
     QString statement;
     QString chosenAnswer;
     int isCorrectAnswer;
