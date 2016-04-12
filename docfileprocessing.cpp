@@ -283,8 +283,15 @@ void DocFileProcessing::takeTestHeaderInfo()
     else
         m_loadedData.testType = QuestionTest;
 
-    m_loadedData.testTime = QTime::fromString(getTestTimeString(m_docTextString), "hh:mm");
-    m_loadedData.questionCount = getQuestCountString(m_docTextString).toInt();
+    if ((m_loadedData.testTime = QTime::fromString(getTestTimeString(m_docTextString), "hh:mm")).isNull()) {
+        QMessageBox::warning(0, "Error", "Ошибка. В выбранном документе не найдено время выполнение теста.\nПожалуйста, заполните поле время выполнение теста.");
+        return;
+    }
+
+    if ((m_loadedData.questionCount = getQuestCountString(m_docTextString).toInt()) == 0) {
+        QMessageBox::warning(0, "Error", "Ошибка. В выбранном документе не заполнено поле количество вопросов.\nПожалуйста, заполните поле количество вопросов.");
+        return;
+    }
 
     int testHeaderStart = m_docTextString.indexOf(header, 0, Qt::CaseInsensitive);
     int testHeaderEnd = m_docTextString.indexOf(statement, 0, Qt::CaseInsensitive);
