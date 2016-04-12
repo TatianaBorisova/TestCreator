@@ -145,8 +145,8 @@ void ResultDbSubView::fillResultStructure()
                 vector.id              = q_questionInfo.value(q_questionInfo.record().indexOf("resultid")).toInt();
                 vector.statement       = q_questionInfo.value(q_questionInfo.record().indexOf("statement")).toString();
                 vector.chosenAnswer    = q_questionInfo.value(q_questionInfo.record().indexOf("chosenvar")).toString();
-                vector.isCorrectAnswer = q_questionInfo.value(q_questionInfo.record().indexOf("assuarance")).toInt();
-                vector.assurance       = q_questionInfo.value(q_questionInfo.record().indexOf("iscorrect")).toInt();
+                vector.isCorrectAnswer = q_questionInfo.value(q_questionInfo.record().indexOf("iscorrect")).toInt();
+                vector.assurance       = q_questionInfo.value(q_questionInfo.record().indexOf("assuarance")).toInt();
 
                 m_answerInfo.append(vector);
             }
