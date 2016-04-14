@@ -79,16 +79,16 @@ void MainWindow::createTrayIcon()
 
 void MainWindow::createActions()
 {
-    m_minimizeAction = new QAction(tr("Mi&nimize"), this);
+    m_minimizeAction = new QAction(tr("Свернуть"), this);
     connect(m_minimizeAction, SIGNAL(triggered()), this, SLOT(hide()));
 
-    m_maximizeAction = new QAction(tr("Ma&ximize"), this);
+    m_maximizeAction = new QAction(tr("Развернуть"), this);
     connect(m_maximizeAction, SIGNAL(triggered()), this, SLOT(showMaximized()));
 
-    m_restoreAction = new QAction(tr("&Restore"), this);
+    m_restoreAction = new QAction(tr("Востановить окно"), this);
     connect(m_restoreAction, SIGNAL(triggered()), this, SLOT(showNormal()));
 
-    m_quitAction = new QAction(tr("&Quit"), this);
+    m_quitAction = new QAction(tr("Выход"), this);
     connect(m_quitAction, SIGNAL(triggered()), qApp, SLOT(quit()));
 }
 
@@ -98,7 +98,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
         QMessageBox::information(this, tr("Systray"),
                                  tr("Программа продолжит работать и будет доступна из "
                                     "системного трея.\nДля выхода из программы "
-                                    "выберите Quit в контекстном меню "
+                                    "выберите Выход в контекстном меню "
                                     "системного трея."));
         hide();
         event->ignore();
