@@ -34,13 +34,7 @@ DocFileProcessing::DocFileProcessing(QObject *parent) :
 
 TestData DocFileProcessing::readFromDocFile(const QString &filename, QWidget *parent)
 {
-    m_loadedData.questions.clear();
-    m_loadedData.questionCount = 0;
-    m_loadedData.testName.clear();
-    m_loadedData.testTime = QTime(0, 0);
-
     if (!filename.isEmpty()) {
-
         clearData();
 
         m_wordApp = new QAxWidget("Word.Application", parent);
@@ -62,18 +56,35 @@ TestData DocFileProcessing::readFromDocFile(const QString &filename, QWidget *pa
         }
 
         for (int i = 0; i < m_testList.count(); i++) {
-            fillTestQuestionInfo(m_testList.at(i));
+            if (!fillTestQuestionInfo(m_testList.at(i))) {
+                QMessageBox::warning(0, "Error", QString("Ошибка чтения документа в блоке %1. "
+                                                         "Поправьте документ и перезагрузите.").arg(QString::number(i + 1)));
+                clearData();
+                return m_loadedData;
+            }
         }
 
         for (int i = 0; i < m_statementList.count(); i++) {
-            if (m_statementList.at(i).isEmpty())
+            if (m_statementList.at(i).isEmpty()) {
                 QMessageBox::warning(0, "Error", QString("Ошибка чтения документа. "
                                                          "В выбранном документе не заполнено Утверждение %1. "
                                                          "Поправьте документ и перезагрузите.").arg(QString::number(i + 1)));
+                clearData();
+                return m_loadedData;
+            }
 
             TestQuestions question;
             question.question = StringEncryption::stringEncrypt(m_statementList.at(i), encryptKey);
             question.weight   = 1;
+
+            if (findCorrectAnswerDublicates(m_answerList.at(i).correctAnswer, m_answerList.at(i).uncorrectAnswers)) {
+                QMessageBox::warning(0, "Error", QString("Ошибка чтения документа. "
+                                                         "В выбранном документе совпадают верный и неверные ответы в блоке %1. "
+                                                         "Поправьте документ и перезагрузите.").arg(QString::number(i + 1)));
+                clearData();
+                return m_loadedData;
+            }
+
             question.answers.correctAnswer    = StringEncryption::stringEncrypt(m_answerList.at(i).correctAnswer, encryptKey);
             question.answers.uncorrectAnswers = StringEncryption::stringEncrypt(m_answerList.at(i).uncorrectAnswers, encryptKey);
             question.answers.imgName          = m_answerList.at(i).imgName;
@@ -84,7 +95,18 @@ TestData DocFileProcessing::readFromDocFile(const QString &filename, QWidget *pa
     return m_loadedData;
 }
 
-void DocFileProcessing::fillTestQuestionInfo(QString str)
+bool DocFileProcessing::findCorrectAnswerDublicates(const QString &correct, const QString &incorrectAnswers)
+{
+    QStringList list = incorrectAnswers.split(";");
+    for (int i = 0; i < list.count(); i++) {
+        if (list.at(i).toLower() == correct.toLower())
+            return true;
+    }
+
+    return false;
+}
+
+bool DocFileProcessing::fillTestQuestionInfo(QString str)
 {
     int correctAnswerIndx = str.indexOf(correctAnswer, 0, Qt::CaseInsensitive);
     int incorrectAnswerIndx = str.indexOf(incorrectAnswer, 0, Qt::CaseInsensitive);
@@ -92,19 +114,19 @@ void DocFileProcessing::fillTestQuestionInfo(QString str)
 
     if (correctAnswerIndx < 0) {
         QMessageBox::warning(0, "Error", "Ошибка. Не найден верный вариант\nответа в блоке:\n" + str);
-        return;
+        return false;
     }
 
     if (incorrectAnswerIndx < 0) {
         QMessageBox::warning(0, "Error", "Ошибка. Не найдены неверные варианты\nответов в блоке:\n" + str);
-        return;
+        return false;
     }
 
     if (correctAnswerIndx > incorrectAnswerIndx) {
         QMessageBox::warning(0, "Error", "Ошибка. Неверный порядок утверждений в блоке:\n"
                              + str
                              + "\nПравильный вид:\nУтверждение:...\nВерный ответ:...\nНеверные ответы:...\nКартинка:...\n");
-        return;
+        return false;
     }
 
     QString statement = str.left(correctAnswerIndx);
@@ -135,6 +157,8 @@ void DocFileProcessing::fillTestQuestionInfo(QString str)
     answer.imgName          = imgstring;
 
     m_answerList.append(answer);
+
+    return true;
 }
 
 void DocFileProcessing::clearData()
@@ -146,6 +170,11 @@ void DocFileProcessing::clearData()
     m_statementList.clear();
     m_answerList.clear();
     m_docTextString.clear();
+
+    m_loadedData.questions.clear();
+    m_loadedData.questionCount = 0;
+    m_loadedData.testName.clear();
+    m_loadedData.testTime = QTime(0, 0);
 }
 
 /////////////////////finish loading from file

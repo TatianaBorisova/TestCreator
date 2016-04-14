@@ -29,8 +29,10 @@ private:
     QString firstTestString(int firstIndex, QString readStatement);
     QString clearStatementString(const QString &str);
 
-    void fillTestQuestionInfo(QString str);
+    bool fillTestQuestionInfo(QString str);
     void takeTestHeaderInfo();
+
+    bool findCorrectAnswerDublicates(const QString &correct, const QString &incorrectAnswers);
 
     QStringList     m_testList;
     QStringList     m_statementList;

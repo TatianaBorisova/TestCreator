@@ -184,6 +184,9 @@ void QuestionCreatorTabView::loadDataFromDocFile(const QString &name)
     if (!name.isEmpty()) {
         m_data = m_docReader->readFromDocFile(name, this);
 
+        if (m_data.testName.isEmpty())
+            return;
+
         //fill test edit view
         emit loadTestData(m_data);
 
