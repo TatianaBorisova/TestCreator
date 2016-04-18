@@ -28,7 +28,7 @@ QuestionEditorSubView::QuestionEditorSubView(QWidget *parent) :
     m_correctAnswerBox(new QPlainTextEdit(this)),
     m_incorrectAnswerBox(new QPlainTextEdit(this)),
     m_back(new QPushButton("Вернуться к параметрам теста", this)),
-    m_next(new QPushButton("Сохранить и перейти в следующему", this)),
+    m_next(new QPushButton("Сохранить и перейти к следующему", this)),
     m_loadImg(new QPushButton("Загрузить изображение", this))
 {
     this->setStyleSheet("QPushButton { min-height: 50px; }");
@@ -197,6 +197,6 @@ void QuestionEditorSubView::setBackBtnText(int index)
     if (index == m_questionMax - 1) {
         m_next->setText("Cохранить и вернуться в начало");
     } else {
-        m_next->setText("Сохранить и перейти в следующему");
+        m_next->setText("Сохранить и перейти к следующему");
     }
 }

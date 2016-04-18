@@ -32,8 +32,6 @@ private:
     bool fillTestQuestionInfo(QString str);
     void takeTestHeaderInfo();
 
-    bool findCorrectAnswerDublicates(const QString &correct, const QString &incorrectAnswers);
-
     QStringList     m_testList;
     QStringList     m_statementList;
     QList <Answers> m_answerList;

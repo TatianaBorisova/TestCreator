@@ -209,30 +209,30 @@ void ClientDataManager::processTestFolder(const QString &testFolder)
             }
             sendFilelistToClient(filesString);
         }
+    } else {
+        sendFilelistToClient("");
     }
 }
 
 void ClientDataManager::sendFilelistToClient(const QString &data)
 {
-    if (data.length() > 0) {
-        QString cmd = data;
-        QByteArray bytes(cmd.toStdString().c_str());
-        //calculate msg sum
-        int msgSize = headerMsgSize + bytes.length();
+    QString cmd = data;
+    QByteArray bytes(cmd.toStdString().c_str());
+    //calculate msg sum
+    int msgSize = headerMsgSize + bytes.length();
 
-        //put data to bytearray
-        QByteArray  arrBlock;
-        arrBlock.fill(0, msgSize);
-        arrBlock.insert(0, QString::number(msgSize));
-        arrBlock.insert(headerMsgSize, cmd);
-        arrBlock.resize(msgSize);
+    //put data to bytearray
+    QByteArray  arrBlock;
+    arrBlock.fill(0, msgSize);
+    arrBlock.insert(0, QString::number(msgSize));
+    arrBlock.insert(headerMsgSize, cmd);
+    arrBlock.resize(msgSize);
 
-        qDebug() << "sendFilelistToClient arr = " << arrBlock;
-        //send data to server
-        qDebug() << m_socket->write(arrBlock);
-        m_socket->flush();
-        m_socket->waitForBytesWritten(3000);
-    }
+    qDebug() << "sendFilelistToClient arr = " << arrBlock;
+    //send data to server
+    qDebug() << m_socket->write(arrBlock);
+    m_socket->flush();
+    m_socket->waitForBytesWritten(3000);
 }
 
 void ClientDataManager::sendFileToClient(const QByteArray &data, const QString &filename)
