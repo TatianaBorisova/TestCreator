@@ -12,6 +12,7 @@ class TestCreatorView;
 class SettingSubView;
 class QSystemTrayIcon;
 class QMenu;
+class QSettings;
 
 class MainWindowTab;
 
@@ -48,6 +49,7 @@ private:
     MainWindowTab      *m_wnd;
     QSystemTrayIcon    *m_trayIcon;
     QMenu              *m_trayIconMenu;
+    QSettings          *m_screenSettings;
 };
 
 #endif // MAINWINDOW_H

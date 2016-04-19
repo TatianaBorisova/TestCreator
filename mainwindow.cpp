@@ -12,14 +12,26 @@
 #include <QMessageBox>
 #include <QCloseEvent>
 #include <QDebug>
+#include <QSettings>
 
 MainWindow::MainWindow(QWidget *parent) :
     QWidget(parent),
     m_wnd(new MainWindowTab(this)),
     m_trayIcon(new QSystemTrayIcon(this)),
-    m_trayIconMenu(new QMenu(this))
+    m_trayIconMenu(new QMenu(this)),
+    m_screenSettings(new QSettings("resolution.ini", QSettings::IniFormat))
 {
-    setFixedSize(getScreenGeometry().width()*0.98, getScreenGeometry().height()*0.9);
+    m_screenSettings->beginGroup("mainscreen");
+    int mainW = m_screenSettings->value("width").toInt();
+    int mainH = m_screenSettings->value("height").toInt();
+    int x = m_screenSettings->value("x_coord").toInt();
+    int y = m_screenSettings->value("y_coord").toInt();
+    m_screenSettings->endGroup();
+
+    if(mainW !=0 && mainH != 0)
+        setGeometry(x, y, mainW, mainH);
+    else
+        setFixedSize(getScreenGeometry().width()*0.98, getScreenGeometry().height()*0.9);
 
     connect(m_wnd, &MainWindowTab::showView, this, &MainWindow::showMainView);
 

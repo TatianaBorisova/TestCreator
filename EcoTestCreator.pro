@@ -55,3 +55,6 @@ HEADERS  += \
 
 RESOURCES += \
     res.qrc
+
+DISTFILES += \
+    resolution.ini
