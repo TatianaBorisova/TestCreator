@@ -46,10 +46,7 @@ MainWindowTab::MainWindowTab(QWidget *parent) :
 
 void MainWindowTab::resize()
 {
-    QWidget *wParent = dynamic_cast<QWidget *>(parent());
-    if (wParent) {
-        setFixedSize(wParent->width(), wParent->height());
-    }
+    setFixedSize(width(), height());
 
     m_creatorPage->setFixedSize(width()*0.98, height()*0.9);
     m_settingsPage->setFixedSize(width()*0.98, height()*0.9);

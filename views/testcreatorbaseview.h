@@ -15,6 +15,9 @@ signals:
     void showView(TestViews view);
     void showSubView(SubViews view);
 
+protected:
+    void resizeEvent(QResizeEvent *event);
+
 public slots:
     void show();
 

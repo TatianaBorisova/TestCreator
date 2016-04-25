@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include "global.h"
+#include "views/testcreatorbaseview.h"
 
 #include <QWidget>
 #include <QSystemTrayIcon>
@@ -16,7 +17,7 @@ class QSettings;
 
 class MainWindowTab;
 
-class MainWindow : public QWidget
+class MainWindow : public TestCreatorBaseView
 {
     Q_OBJECT
 public:
@@ -34,6 +35,9 @@ private slots:
     void iconActivated(QSystemTrayIcon::ActivationReason reason);
     void messageClicked();
     void showMessage();
+
+protected:
+    virtual void resize();
 
 private:
     void hidePreviuosWindows();

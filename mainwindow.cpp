@@ -15,7 +15,7 @@
 #include <QSettings>
 
 MainWindow::MainWindow(QWidget *parent) :
-    QWidget(parent),
+    TestCreatorBaseView(parent),
     m_wnd(new MainWindowTab(this)),
     m_trayIcon(new QSystemTrayIcon(this)),
     m_trayIconMenu(new QMenu(this)),
@@ -31,7 +31,8 @@ MainWindow::MainWindow(QWidget *parent) :
     if(mainW !=0 && mainH != 0)
         setGeometry(x, y, mainW, mainH);
     else
-        setFixedSize(getScreenGeometry().width()*0.98, getScreenGeometry().height()*0.9);
+        setGeometry((getScreenGeometry().width()*0.02)/2, (getScreenGeometry().height()*0.1)/2, getScreenGeometry().width()*0.98, getScreenGeometry().height()*0.9);
+    m_wnd->setFixedSize(width(), height());
 
     connect(m_wnd, &MainWindowTab::showView, this, &MainWindow::showMainView);
 
@@ -58,6 +59,7 @@ void MainWindow::showMainView(TestViews view)
     m_wnd->setCurrentTabView(view);
     m_wnd->show();
     this->show();
+    //this->showFullScreen();
 }
 
 void MainWindow::hidePreviuosWindows()
@@ -148,4 +150,9 @@ void MainWindow::messageClicked()
 void MainWindow::showMessage()
 {
     m_trayIcon->showMessage("Information", "Test Creator приложение запущено.", QSystemTrayIcon::Information, 5000);
+}
+
+void MainWindow::resize()
+{
+    m_wnd->setFixedSize(width(), height());
 }
