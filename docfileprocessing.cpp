@@ -74,11 +74,11 @@ TestData DocFileProcessing::readFromDocFile(const QString &filename, QWidget *pa
             }
 
             TestQuestions question;
-            question.question = StringEncryption::stringEncrypt(m_statementList.at(i), encryptKey);
+            question.question = StringEncryption::stringEncrypt(m_statementList.at(i));
             question.weight   = 1;
 
-            question.answers.correctAnswer    = StringEncryption::stringEncrypt(m_answerList.at(i).correctAnswer, encryptKey);
-            question.answers.uncorrectAnswers = StringEncryption::stringEncrypt(m_answerList.at(i).uncorrectAnswers, encryptKey);
+            question.answers.correctAnswer    = StringEncryption::stringEncrypt(m_answerList.at(i).correctAnswer);
+            question.answers.uncorrectAnswers = StringEncryption::stringEncrypt(m_answerList.at(i).uncorrectAnswers);
             question.answers.imgName          = m_answerList.at(i).imgName;
 
             m_loadedData.questions.append(question);

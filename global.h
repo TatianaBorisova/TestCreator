@@ -14,8 +14,6 @@ const QString newentryMsg = QString("NEWFILEENTRY");
 const int cmdSize = 8;
 
 const QString testTypeStr = QString("Утверждения");
-//encryption
-const QString encryptKey = QString("test");
 
 typedef struct answers {
     QString correctAnswer;

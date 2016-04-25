@@ -3,6 +3,7 @@
 #include <QSystemTrayIcon>
 #include <QMessageBox>
 #include <QApplication>
+#include <QTextCodec>
 
 int main(int argc, char *argv[])
 {
@@ -15,6 +16,11 @@ int main(int argc, char *argv[])
         return 1;
     }
     QApplication::setQuitOnLastWindowClosed(false);
+
+    // For correct encoding
+    QTextCodec *codec = QTextCodec::codecForName("UTF-8");
+
+    QTextCodec::setCodecForLocale(codec);
 
     MainWindow mainWnd;
 

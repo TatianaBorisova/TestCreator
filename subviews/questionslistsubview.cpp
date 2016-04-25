@@ -49,9 +49,9 @@ void QuestionsListSubView::setQuestionsList(const QList<TestQuestions> &list)
 
     for (int i = 0; i < list.count(); i++) {
         m_questions->setPlainText(m_questions->toPlainText() + "\n"
-                                  + "\nВопрос: " + StringEncryption::stringDecrypt(list.at(i).question, encryptKey) + "\n"
-                                  + "\nВерные ответы: " + StringEncryption::stringDecrypt(list.at(i).answers.correctAnswer, encryptKey) + "\n"
-                                  + "\nНеверные ответы: " + StringEncryption::stringDecrypt(list.at(i).answers.uncorrectAnswers, encryptKey) + "\n"
+                                  + "\nВопрос: " + StringEncryption::stringDecrypt(list.at(i).question) + "\n"
+                                  + "\nВерные ответы: " + StringEncryption::stringDecrypt(list.at(i).answers.correctAnswer) + "\n"
+                                  + "\nНеверные ответы: " + StringEncryption::stringDecrypt(list.at(i).answers.uncorrectAnswers) + "\n"
                                   + "\nКартинка: " + list.at(i).answers.imgName + "\n");
     }
 }
