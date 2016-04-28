@@ -32,6 +32,9 @@ MainWindow::MainWindow(QWidget *parent) :
         setGeometry(x, y, mainW, mainH);
     else
         setGeometry((getScreenGeometry().width()*0.02)/2, (getScreenGeometry().height()*0.1)/2, getScreenGeometry().width()*0.98, getScreenGeometry().height()*0.9);
+
+    setMinimumSize(width()/2, height()/2);
+
     m_wnd->setFixedSize(width(), height());
 
     connect(m_wnd, &MainWindowTab::showView, this, &MainWindow::showMainView);
@@ -109,7 +112,7 @@ void MainWindow::createActions()
 void MainWindow::closeEvent(QCloseEvent *event)
 {
     if (m_trayIcon->isVisible()) {
-        QMessageBox::information(this, tr("Systray"),
+        QMessageBox::information(this, tr("Информационное окно"),
                                  tr("Программа продолжит работать и будет доступна из "
                                     "системного трея.\nДля выхода из программы "
                                     "выберите Выход в контекстном меню "
@@ -122,17 +125,17 @@ void MainWindow::closeEvent(QCloseEvent *event)
 void MainWindow::setVisible(bool visible)
 {
     m_minimizeAction->setEnabled(visible);
-    m_maximizeAction->setEnabled(!isMaximized());
-    m_restoreAction->setEnabled(isMaximized() || !visible);
+    m_maximizeAction->setEnabled(!visible);
+    m_restoreAction->setEnabled(!visible);
     QWidget::setVisible(visible);
 }
 
 void MainWindow::iconActivated(QSystemTrayIcon::ActivationReason reason)
 {
     switch (reason) {
-    case QSystemTrayIcon::Trigger:
+    //case QSystemTrayIcon::Trigger:
     case QSystemTrayIcon::DoubleClick:
-        qDebug() <<  "DOUBLE ckicked";
+        showMaximized();
         break;
     case QSystemTrayIcon::MiddleClick:
         showMessage();

@@ -91,7 +91,7 @@ void TestEditorSubView::addQuestions()
     if (m_questionCountBox->text().toInt() > 0)
         emit showSubView(QuestionEditor);
     else
-        QMessageBox::warning(0, "Warning", "Сперва введите количество вопросов.");
+        QMessageBox::warning(0, "Внимание", "Сперва введите количество вопросов.");
 }
 
 void TestEditorSubView::loadDocFile()
@@ -110,7 +110,7 @@ void TestEditorSubView::loadDBFile()
         if (QString(bytes.data()).contains("SQLite format"))
             emit loadedDBFile(filePath);
         else
-            QMessageBox::warning(0, "Error", "Выбранный файл не файл SQLite базы данных.");
+            QMessageBox::warning(0, "Ошибка", "Выбранный файл не файл SQLite базы данных.");
     }
 }
 

@@ -151,6 +151,10 @@ void SettingSubView::startServer()
 
 void SettingSubView::resize()
 {
+}
+
+void SettingSubView::setStartData()
+{
     emit testDbChanged(m_testPathLabel->text() + m_testBox->text());
     emit resultDbChanged(m_resultPathLabel->text() + m_resultBox->text());
 }

@@ -55,6 +55,6 @@ void DbTestViewer::chosenTestname()
         if (item)
             emit chosenTest(item->text());
         else
-            QMessageBox::warning(0, "Error", "Выберите тест из списка.");
+            QMessageBox::warning(0, "Ошибка", "Выберите тест из списка.");
     }
 }

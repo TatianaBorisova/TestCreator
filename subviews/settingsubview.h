@@ -25,6 +25,8 @@ public:
     QString testDb() const;
     QString resultDb() const;
 
+    void setStartData();
+
 signals:
     void testDbChanged(const QString &value);
     void resultDbChanged(const QString &value);

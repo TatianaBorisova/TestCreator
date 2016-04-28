@@ -22,3 +22,7 @@ void SettingsTabView::setFixedSize(int w, int h)
     resize();
 }
 
+void SettingsTabView::setStartData()
+{
+    m_settings->setStartData();
+}

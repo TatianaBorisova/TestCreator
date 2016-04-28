@@ -40,6 +40,7 @@ MainWindowTab::MainWindowTab(QWidget *parent) :
 
     m_box->addWidget(m_tab);
 
+    m_settingsPage->setStartData();
     m_createdTestPage->defaulTestBoxPath(QDir::currentPath());
     setLayout(m_box);
 }

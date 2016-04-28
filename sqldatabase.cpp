@@ -123,7 +123,7 @@ void SqlliteDbManager::saveTestToDb(const QString &dbName, const TestData &resul
         int testId = 0;
 
         if (q_existed.next()) {
-            QMessageBox::warning(0, "Warning", QString("Внимание, в базе найден тест с именем %1.\nОн будет заменен на текущий.").arg(result.testName));
+            QMessageBox::warning(0, "Внимание", QString("Внимание, в базе найден тест с именем %1.\nОн будет заменен на текущий.").arg(result.testName));
 
             testId = q_existed.value(idField).toInt();
             QSqlQuery q_deleteId(dbPtr);

@@ -25,8 +25,13 @@ TcpServer::TcpServer(QObject *parent) :
 
 void TcpServer::startServer()
 {
+    if (this->isListening()) {
+        QMessageBox::warning(0, "Внимание", QString("Сервер уже запущен."));
+        return;
+    }
+
     if (!this->listen(QHostAddress::AnyIPv4, m_listeningPort)) {
-        QMessageBox::warning(0, "Error", QString("Unable to start the server: %1.").arg(this->errorString()));
+        QMessageBox::warning(0, "Ошибка", QString("Не могу запустить сервер. Системная ошибка: %1.").arg(this->errorString()));
     } else {
         QList<QHostAddress> ipAddressesList = QNetworkInterface::allAddresses();
 

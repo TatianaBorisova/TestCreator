@@ -57,7 +57,7 @@ TestData DocFileProcessing::readFromDocFile(const QString &filename, QWidget *pa
 
         for (int i = 0; i < m_testList.count(); i++) {
             if (!fillTestQuestionInfo(m_testList.at(i))) {
-                QMessageBox::warning(0, "Error", QString("Ошибка чтения документа в блоке %1. "
+                QMessageBox::warning(0, "Ошибка", QString("Ошибка чтения документа в блоке %1. "
                                                          "Поправьте документ и перезагрузите.").arg(QString::number(i + 1)));
                 clearData();
                 return m_loadedData;
@@ -66,7 +66,7 @@ TestData DocFileProcessing::readFromDocFile(const QString &filename, QWidget *pa
 
         for (int i = 0; i < m_statementList.count(); i++) {
             if (m_statementList.at(i).isEmpty()) {
-                QMessageBox::warning(0, "Error", QString("Ошибка чтения документа. "
+                QMessageBox::warning(0, "Ошибка", QString("Ошибка чтения документа. "
                                                          "В выбранном документе не заполнено Утверждение %1. "
                                                          "Поправьте документ и перезагрузите.").arg(QString::number(i + 1)));
                 clearData();
@@ -94,17 +94,17 @@ bool DocFileProcessing::fillTestQuestionInfo(QString str)
     int imgPathIndx = str.indexOf(picturePath, 0, Qt::CaseInsensitive);
 
     if (correctAnswerIndx < 0) {
-        QMessageBox::warning(0, "Error", "Ошибка. Не найден верный вариант\nответа в блоке:\n" + str);
+        QMessageBox::warning(0, "Ошибка", "Ошибка. Не найден верный вариант\nответа в блоке:\n" + str);
         return false;
     }
 
     if (incorrectAnswerIndx < 0) {
-        QMessageBox::warning(0, "Error", "Ошибка. Не найдены неверные варианты\nответов в блоке:\n" + str);
+        QMessageBox::warning(0, "Ошибка", "Ошибка. Не найдены неверные варианты\nответов в блоке:\n" + str);
         return false;
     }
 
     if (correctAnswerIndx > incorrectAnswerIndx) {
-        QMessageBox::warning(0, "Error", "Ошибка. Неверный порядок утверждений в блоке:\n"
+        QMessageBox::warning(0, "Ошибка", "Ошибка. Неверный порядок утверждений в блоке:\n"
                              + str
                              + "\nПравильный вид:\nУтверждение:...\nВерный ответ:...\nНеверные ответы:...\nКартинка:...\n");
         return false;
@@ -283,7 +283,7 @@ void DocFileProcessing::printReadData()
 void DocFileProcessing::takeTestHeaderInfo()
 {
     if ((m_loadedData.testName = getTestNameString(m_docTextString)).isEmpty()) {
-        QMessageBox::warning(0, "Error", "Ошибка. В выбранном документе не найдено название теста.\nПожалуйста, заполните поле названия теста.");
+        QMessageBox::warning(0, "Ошибка", "Ошибка. В выбранном документе не найдено название теста.\nПожалуйста, заполните поле названия теста.");
         return;
     }
 
@@ -294,12 +294,12 @@ void DocFileProcessing::takeTestHeaderInfo()
         m_loadedData.testType = QuestionTest;
 
     if ((m_loadedData.testTime = QTime::fromString(getTestTimeString(m_docTextString), "hh:mm")).isNull()) {
-        QMessageBox::warning(0, "Error", "Ошибка. В выбранном документе не найдено время выполнение теста.\nПожалуйста, заполните поле время выполнение теста.");
+        QMessageBox::warning(0, "Ошибка", "Ошибка. В выбранном документе не найдено время выполнение теста.\nПожалуйста, заполните поле время выполнение теста.");
         return;
     }
 
     if ((m_loadedData.questionCount = getQuestCountString(m_docTextString).toInt()) == 0) {
-        QMessageBox::warning(0, "Error", "Ошибка. В выбранном документе не заполнено поле количество вопросов.\nПожалуйста, заполните поле количество вопросов.");
+        QMessageBox::warning(0, "Ошибка", "Ошибка. В выбранном документе не заполнено поле количество вопросов.\nПожалуйста, заполните поле количество вопросов.");
         return;
     }
 

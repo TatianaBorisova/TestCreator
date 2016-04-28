@@ -13,6 +13,8 @@ public:
 
     void setFixedSize(int w, int h);
 
+    void setStartData();
+
 signals:
     void testDbChanged(const QString &value);
     void resultDbChanged(const QString &value);

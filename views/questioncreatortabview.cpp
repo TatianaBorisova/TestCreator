@@ -191,7 +191,7 @@ void QuestionCreatorTabView::loadDataFromDocFile(const QString &name)
             QStringList list = m_data.questions.at(i).answers.uncorrectAnswers.split(";");
             for (int j = 0; j < list.count(); j++) {
                 if (m_data.questions.at(i).answers.correctAnswer.toLower() == list.at(j).toLower()) {
-                    QMessageBox::warning(0, "Error", QString("Ошибка чтения документа. "
+                    QMessageBox::warning(0, "Ошибка", QString("Ошибка чтения документа. "
                                                              "В выбранном документе совпадают верный и неверные ответы в блоке %1. "
                                                              "Поправьте документ и перезагрузите.").arg(QString::number(i + 1)));
                     return;
